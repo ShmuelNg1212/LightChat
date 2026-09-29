@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Litechat{% endblock %} · Litechat</title>
+  <title>{% block title %}LightChat{% endblock %} · LightChat</title>
   <link rel="icon" href="{% static 'brand/favicon.svg' %}" type="image/svg+xml">
   <link rel="icon" href="{% static 'brand/favicon-32.png' %}" sizes="32x32" type="image/png">
   <link rel="apple-touch-icon" href="{% static 'brand/apple-touch-icon.png' %}">
@@ -18,7 +18,7 @@
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="topbar">
     {% block topbar_start %}{% endblock %}
-    <a class="brand" href="{% url 'home' %}">Litechat</a>
+    <a class="brand" href="{% url 'home' %}">LightChat</a>
     {% if user.is_authenticated %}
       <nav class="topnav" aria-label="Account">
         {% block topnav_extra %}{% endblock %}

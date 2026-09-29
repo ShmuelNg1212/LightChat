@@ -1,4 +1,4 @@
-// Litechat chat page behaviour. No framework; progressive enhancement over server-rendered HTML.
+// LightChat chat page behaviour. No framework; progressive enhancement over server-rendered HTML.
 (function () {
   "use strict";
 
@@ -97,7 +97,7 @@
     conversationInput.value = start.conversation;
     if (!start.created) return;
     history.replaceState(null, "", start.url);
-    document.title = start.title + " · Litechat";
+    document.title = start.title + " · LightChat";
     if (start.header_html && !document.querySelector(".chat-header")) {
       scroller.before(fromHTML(start.header_html));
     }
@@ -181,7 +181,7 @@
     } catch (err) {
       // Nothing reached the server, or we can't tell. Keep the same request ID so
       // sending again can't be charged twice.
-      showRejection(reply.article, "Couldn't reach Litechat. Check your connection and send again.");
+      showRejection(reply.article, "Couldn't reach LightChat. Check your connection and send again.");
       if (userBubble) { userBubble.remove(); textarea.value = prompt; autosize(); }
       setBusy(false);
       return;
