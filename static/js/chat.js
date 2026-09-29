@@ -61,6 +61,7 @@
       document.getElementById("warning-available").textContent = (availableMicro / 1e6).toFixed(4);
     }
     sendButton.disabled = busy || short;
+    form.classList.toggle("is-short", short);
   }
 
   const showPrice = () => {
@@ -68,6 +69,8 @@
     rate.textContent = "Price: " + option.dataset.price + ".";
     example.textContent = option.dataset.example;
     hold.textContent = option.dataset.hold;
+    document.getElementById("model-hold-short").textContent = option.dataset.hold;
+    document.querySelectorAll(".model-example-copy").forEach((n) => { n.textContent = option.dataset.example; });
     checkCredit();
   };
   modelSelect.addEventListener("change", showPrice);

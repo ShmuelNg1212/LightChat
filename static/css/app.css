@@ -468,6 +468,7 @@ body.chat-body { overflow: hidden; }
   max-width: calc(var(--measure) + 2px); margin: 0 auto; padding: var(--space-3) var(--space-4);
   border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--surface); font-size: 0.9375rem;
 }
+.tariff-hold-short, .composer-about { display: none; }
 .composer-note { margin: var(--space-1) 0 0; font-size: 0.8125rem; line-height: 1.45; color: var(--muted); }
 
 /* ---------- Responsive ---------- */
@@ -501,6 +502,21 @@ body.chat-body { overflow: hidden; }
   .composer-wrap { padding: var(--space-2) var(--space-3) var(--space-3); }
   .tariff { flex: 1 1 100%; margin-right: 0; }
   .tariff-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; padding: 0; border: 0; }
+  /* A compact dock: one line of price and hold; the disclosure one tap away; a warning replaces the price line. */
+  .composer textarea { min-height: 44px; padding: var(--space-1) var(--space-2); }
+  .composer-box { padding: var(--space-1) var(--space-2) var(--space-2); }
+  .tariff-rate { margin-top: var(--space-1); font-size: 0.8125rem; }
+  .tariff-example, .tariff-hold, .composer-note { display: none; }
+  .tariff-hold-short { display: inline; }
+  .composer.is-short .tariff-rate { display: none; }
+  .tariff-warning { margin-top: var(--space-1); padding: var(--space-2); font-size: 0.875rem; }
+  .composer-about { display: block; margin-top: var(--space-1); font-size: 0.8125rem; color: var(--muted); }
+  .composer-about summary { cursor: pointer; text-decoration: underline; text-underline-offset: 0.2em; width: max-content; }
+  .composer-about p { margin: var(--space-1) 0 0; line-height: 1.45; }
+  .first-run { padding-top: var(--space-5); }
+  .first-run h1 { font-size: 1.5rem; }
+  .first-run-balance { margin-bottom: var(--space-4); }
+  .steps li { padding: var(--space-3) 0; }
   .tariff select { flex: 1; }
   .composer-bar .button { flex: 1; }
 }
