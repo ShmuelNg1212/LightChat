@@ -3,7 +3,7 @@
 - **Date:** 2026-09-29 14:06
 - **Study:** [../study/2026-09-29-1357-lightchat-rebrand.md](../study/2026-09-29-1357-lightchat-rebrand.md)
 - **Design brief:** [../design/2026-09-29-1357-lightchat-identity-brief.md](../design/2026-09-29-1357-lightchat-identity-brief.md)
-- **Status:** in-progress
+- **Status:** awaiting-rendezvous
 
 > **Approved 2026-09-29.** The Gardener replied "approved" to the study, brief and plan.
 
@@ -45,7 +45,7 @@ Code-led. Nothing below starts before approval. Every task leaves the app workin
 - [x] 19. `/impeccable critique` of the chat screen against the direction contract, then `/impeccable polish` in one batched round. → `style(ui): polish the chat screen`
 
 ### H. Verification and finish
-- [ ] 20. Seed a **separate** SQLite database (not your dev data) with every chat state via the fake proxy, and capture desktop 1280 and phone 390 × light/dark. Then:
+- [x] 20. Seed a **separate** SQLite database (not your dev data) with every chat state via the fake proxy, and capture desktop 1280 and phone 390 × light/dark. Then:
   - check keyboard-only use (tab order, focus visible, Enter/Shift+Enter/Esc);
   - check the favicon at real 16 px in a tab and the lockup in the header;
   - run the naming test;
@@ -53,7 +53,7 @@ Code-led. Nothing below starts before approval. Every task leaves the app workin
   - make one **paid** live reply (short) to confirm the settle on the real proxy.
 
   Spawn Impeccable's finish reviewer with the contract and screenshots. Act on its disposition (at most two rounds). → fixes as `fix(...)` / `style(...)` commits
-- [ ] 21. All tests pass; `git log` reads cleanly; set Status to `awaiting-rendezvous`. → `docs(plan): mark lightchat-rebrand ready for rendezvous`
+- [x] 21. All tests pass; `git log` reads cleanly; set Status to `awaiting-rendezvous`. → `docs(plan): mark lightchat-rebrand ready for rendezvous`
 
 ### After acceptance (Sync)
 - Generate **DESIGN.md** (and `.impeccable/design.json`) from the built system with Impeccable's documenter. Update the wiki: rename the README title and current-state text to LightChat, add a visual-system section and logo usage links, and note the kept internal names (`litechat.*` loggers, repo folder, proxy domain). → `docs(design): record the LightChat visual system in DESIGN.md`, `docs(wiki): sync after lightchat-rebrand`
@@ -66,6 +66,7 @@ Code-led. Nothing below starts before approval. Every task leaves the app workin
 - **Task 19:** the second screenshot round showed no remaining material defects, so no `style(ui)` polish commit was needed. The critique was carried by the finish reviewer instead (task 20).
 - **Task 20, inspection:** two screenshot rounds (7 page states × desktop/phone × light/dark) on a **separate practice database** seeded through the fake proxy. The Gardener's data was untouched. Round 1 found 6 defects, fixed in `fix(chat): harden…`. axe-core 4.13: 2 findings, fixed, then **0 violations** across 8 pages × 2 themes × 2 widths. The keyboard walk-through passed and added a chat skip link. Impeccable detector: 0 findings.
 - **Task 20, finish review** (`impeccable-finish-reviewer`, fresh context): disposition **fix** with 8 material findings. 6 were accepted and applied in `fix(ui): act on the finish review`: the settle prints the charge; low credit is refused up front with the reason; the minimum hold is shown before sending; an authored select with no phone clipping; the phone readout keeps its unit; sign-up help in our own words; a plated favicon. 2 were declined with reasons (4-decimal sign-up grant; itemised held credit in the header, which belongs to slice 2). It also found a regression: new chats auto-scrolled past their heading. Fixed.
+- **Finish review, verdict round** (same reviewer): all 8 findings closed (6 resolved; both declines accepted with their reasons). One recapture was requested (first-run shots had been taken on an account the live test had used) and redone with a chat-free account. One regression was found (the phone dock was too tall) and fixed in `fix(ui): compact the phone composer dock`. That fix was verified by measurement (dock top 620/844, 577 with the low-credit warning; step 3 fully visible), axe (0), the detector (0) and contrast (pass). It was **not** re-scored by the reviewer, because the two-round review budget ended there.
 - **Paid usage:** 2 short live replies on the practice server (188 in / 49 out and 188 in / 46 out tokens), for the live settle before and after the fix.
 
 ## Later slices (separate requests)
