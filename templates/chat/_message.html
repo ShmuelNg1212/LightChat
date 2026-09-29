@@ -37,7 +37,7 @@
   {% elif gen.status == "needs_reconciliation" %}
     <div class="msg-warn">
       <strong>{% if gen.error_kind == "cancelled" %}Stopped.{% else %}This reply didn't finish.{% endif %}</strong>
-      {% if gen.error_kind != "cancelled" %}{{ gen.error_message }}{% endif %}
+      {% if gen.error_kind != "cancelled" and gen.error_kind != "interrupted" %}{{ gen.error_message }}{% endif %}
       The model service may have charged for part of it, so up to {{ gen.reserved|credits }} credits stay held until it's reviewed. Anything not owed is returned.
       {% if gen.user_message_id == latest_user_id %}<button type="button" class="button button-small" data-retry="{{ gen.user_message_id }}">Retry</button>{% endif %}
     </div>
