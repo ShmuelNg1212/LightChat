@@ -331,8 +331,15 @@ body.chat-body { overflow: hidden; }
 .messages:focus-visible { outline-offset: -2px; }
 .messages-inner { max-width: calc(var(--measure) + 2px); margin: 0 auto; font-size: 17px; }
 
-.empty-state { max-width: 520px; margin: 12vh auto 0; text-align: center; }
-.empty-state p { color: var(--muted); }
+/* First run: the balance and the three-step loop, numbered in a margin column */
+.first-run { padding-top: 8vh; }
+.first-run h1 { font-size: 1.75rem; font-weight: 650; letter-spacing: -0.015em; margin-bottom: var(--space-3); }
+.first-run-balance { margin: 0 0 var(--space-6); color: var(--muted); }
+.first-run-balance strong { color: var(--ink); font: 600 1.1em/1 var(--font-meter); font-variant-numeric: tabular-nums lining-nums; }
+.steps { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.steps li { display: grid; grid-template-columns: 3rem 1fr; align-items: baseline; padding: var(--space-4) 0; border-bottom: 1px solid var(--line); }
+.steps p { margin: 0; line-height: 1.55; }
+.step-n { font: 600 1.35rem/1 var(--font-meter); color: var(--muted); font-variant-numeric: tabular-nums lining-nums; }
 
 .msg { margin-bottom: var(--space-6); }
 .msg-user { display: flex; justify-content: flex-end; }
@@ -427,6 +434,10 @@ body.chat-body { overflow: hidden; }
   color: var(--muted); letter-spacing: 0.01em;
 }
 .tariff-rate strong { color: var(--ink); font-weight: 600; }
+.composer-unavailable {
+  max-width: calc(var(--measure) + 2px); margin: 0 auto; padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--surface); font-size: 0.9375rem;
+}
 .composer-note { margin: var(--space-1) 0 0; font-size: 0.8125rem; line-height: 1.45; color: var(--muted); }
 
 /* ---------- Responsive ---------- */

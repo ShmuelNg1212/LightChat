@@ -42,9 +42,19 @@
           {% include "chat/_message.html" with m=m latest_user_id=latest_user_id %}
         {% endfor %}
       {% else %}
-        <div class="empty-state" id="empty-state">
-          <h1>What can I help with?</h1>
-          <p>Pick a model, ask anything, and pay only for what you use.</p>
+        <div class="first-run" id="empty-state">
+          {% if conversations %}
+            <h1>New chat</h1>
+            <p class="first-run-balance">You have <strong>{{ wallet.available|credits }}</strong> demo credits. Pick a model below and ask anything.</p>
+          {% else %}
+            <h1>Ask anything. Pay only for what you use.</h1>
+            <p class="first-run-balance">You have <strong>{{ wallet.available|credits }}</strong> demo credits. They're for trying LightChat and aren't real money.</p>
+            <ol class="steps">
+              <li><span class="step-n" aria-hidden="true">1</span><p><strong>Pick a model.</strong> Each one shows its price under the message box.</p></li>
+              <li><span class="step-n" aria-hidden="true">2</span><p><strong>Ask your question.</strong> The answer appears as it's written.</p></li>
+              <li><span class="step-n" aria-hidden="true">3</span><p><strong>See exactly what it cost.</strong> The most a reply could cost is held first; anything unused comes straight back.</p></li>
+            </ol>
+          {% endif %}
         </div>
       {% endif %}
     </div>
@@ -74,7 +84,7 @@
       <p class="composer-note">All models here are answered by DeepSeek Flash through different provider interfaces, so replies won't match the named providers. Prices are in demo credits, not real money.</p>
     </form>
     {% else %}
-    <p class="notice">No models are available right now. The service administrator needs to configure a model key.</p>
+    <p class="composer-unavailable" role="status"><strong>No models are available right now,</strong> so nothing can be sent or charged. Please try again later.</p>
     {% endif %}
   </div>
   <div class="visually-hidden" role="status" aria-live="polite" id="live"></div>

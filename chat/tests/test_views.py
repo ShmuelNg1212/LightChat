@@ -211,3 +211,28 @@ class ReadoutTests(TestCase):
         self.assertIn('class="brand-mark"', html)
         self.assertIn('<span class="brand-name">LightChat</span>', html)
         self.assertIn('id="balance-held" hidden', html)
+
+
+@keys
+class FirstRunTests(TestCase):
+    def setUp(self):
+        self.user = make_user(credit=5_000_000)
+        self.client.force_login(self.user)
+
+    def test_first_run_shows_balance_and_three_steps(self):
+        html = self.client.get(reverse("home")).content.decode()
+        self.assertIn("<strong>5.0000</strong> demo credits", html)
+        self.assertIn("aren't real money", html)
+        self.assertEqual(html.count('class="step-n"'), 3)
+
+    def test_returning_user_gets_compact_new_chat(self):
+        Conversation.objects.create(owner=self.user, title="Earlier")
+        html = self.client.get(reverse("home")).content.decode()
+        self.assertIn("<h1>New chat</h1>", html)
+        self.assertNotIn('class="step-n"', html)
+
+    def test_no_models_state(self):
+        with self.settings(PROXY_KEYS={"openai": "", "anthropic": "", "google": ""}):
+            html = self.client.get(reverse("home")).content.decode()
+        self.assertIn("No models are available right now,", html)
+        self.assertNotIn('id="composer"', html)
