@@ -1,5 +1,28 @@
 /* Litechat: one stylesheet, tokens first. Light and dark follow the OS setting. */
 
+/* Self-hosted fonts (SIL OFL 1.1), see static/fonts/README.md */
+@font-face {
+  font-family: "Public Sans";
+  src: url("../fonts/public-sans-latin-var.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Barlow Semi Condensed";
+  src: url("../fonts/barlow-semi-condensed-latin-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Barlow Semi Condensed";
+  src: url("../fonts/barlow-semi-condensed-latin-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg: #f7f7f5;
   --surface: #ffffff;
