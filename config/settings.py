@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "accounts",
     "billing",
     "catalog",
+    "proxy",
 ]
 
 MIDDLEWARE = [

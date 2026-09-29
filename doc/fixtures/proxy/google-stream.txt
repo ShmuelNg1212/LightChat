@@ -1,0 +1,25 @@
+# POST /google/v1beta/models/gemini-3.8-flash:streamGenerateContent?alt=sse
+# status: 200
+# content-type: text/event-stream
+# x-request-id: req_jctyKoEIY0TML1ldWgqThCvEOxiMeQyw5zdpyJV-kXY
+# ---
+data: {"candidates":[{"content":{"parts":[{"text":"Hello"}],"role":"model"},"index":0}],"modelVersion":"gemini-3.8-flash"}
+
+data: {"candidates":[{"content":{"parts":[{"text":"!"}],"role":"model"},"index":0}],"modelVersion":"gemini-3.8-flash"}
+
+data: {"candidates":[{"content":{"parts":[{"text":" How"}],"role":"model"},"index":0}],"modelVersion":"gemini-3.8-flash"}
+
+data: {"candidates":[{"content":{"parts":[{"text":" can"}],"role":"model"},"index":0}],"modelVersion":"gemini-3.8-flash"}
+
+data: {"candidates":[{"content":{"parts":[{"text":" I"}],"role":"model"},"index":0}],"modelVersion":"gemini-3.8-flash"}
+
+data: {"candidates":[{"content":{"parts":[{"text":" help"}],"role":"model"},"index":0}],"modelVersion":"gemini-3.8-flash"}
+
+data: {"candidates":[{"content":{"parts":[{"text":" you"}],"role":"model"},"index":0}],"modelVersion":"gemini-3.8-flash"}
+
+data: {"candidates":[{"content":{"parts":[{"text":" today"}],"role":"model"},"index":0}],"modelVersion":"gemini-3.8-flash"}
+
+data: {"candidates":[{"content":{"parts":[{"text":"?"}],"role":"model"},"index":0}],"modelVersion":"gemini-3.8-flash"}
+
+data: {"candidates":[{"content":{"parts":[],"role":"model"},"finishReason":"STOP","index":0}],"modelVersion":"gemini-3.8-flash","usageMetadata":{"cachedContentTokenCount":0,"candidatesTokenCount":9,"promptTokenCount":183,"totalTokenCount":192}}
+

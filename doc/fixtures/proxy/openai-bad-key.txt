@@ -1,0 +1,6 @@
+# POST /openai/v1/chat/completions
+# status: 401
+# content-type: application/json
+# x-request-id: req_C3wErZ-5-MfxSL9baHIVZ2VzFUmssFU9shRu4gAJB40
+# ---
+{"error":{"code":"Unauthorized","message":"invalid or inactive provider key","param":null,"type":"authentication_error"}}
