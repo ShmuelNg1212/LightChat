@@ -2,7 +2,7 @@
 
 - **Date:** 2026-09-29 14:56
 - **Study:** [../study/2026-09-29-1456-assessment-package.md](../study/2026-09-29-1456-assessment-package.md)
-- **Status:** in-progress
+- **Status:** awaiting-rendezvous
 
 > **Approved 2026-09-29, with changes from the Gardener:**
 > - Transcripts go in as **raw JSONL**. The derived `readable/` renderings are dropped. Only the required minimal redactions (email, test passwords) are applied to the copies.
@@ -51,11 +51,11 @@ Excluded entirely: `.env`, all `*.sqlite3` databases, `.venv/`, `node_modules/`,
 
 ## Tasks
 
-- [ ] 1. Add `submission/` to `.gitignore`. → `chore: ignore the local submission package`
-- [ ] 2. Add `tools/package_submission.py`, a stdlib-only script that builds the layout above. It copies originals, writes the redacted copies and the labeled generated files, and computes the manifest. It then **scans the finished folder** for every `.env` value, the email, the test passwords, `*.sqlite3`, `.env` files and dependency folders, and aborts if anything is found. Last, it zips the folder. → `chore(tools): add the submission packaging script`
-- [ ] 3. Write the assessor README and SKILLS-USED.md in `submission/inputs/` (gitignored, **not committed**; the script copies them in). Summaries are marked *retrospective (written 2026-09-29 at packaging time)*. No commit.
-- [ ] 4. Fetch Impeccable's upstream `LICENSE` (Apache-2.0) for inclusion. Run the full test suite verbosely and capture it. Run the packaging script. It makes no commit, because its output is gitignored.
-- [ ] 5. Verify:
+- [x] 1. Add `submission/` to `.gitignore`. → `chore: ignore the local submission package`
+- [x] 2. Add `tools/package_submission.py`, a stdlib-only script that builds the layout above. It copies originals, writes the redacted copies and the labeled generated files, and computes the manifest. It then **scans the finished folder** for every `.env` value, the email, the test passwords, `*.sqlite3`, `.env` files and dependency folders, and aborts if anything is found. Last, it zips the folder. → `chore(tools): add the submission packaging script`
+- [x] 3. Write the assessor README and SKILLS-USED.md in `submission/inputs/` (gitignored, **not committed**; the script copies them in). Summaries are marked *retrospective (written 2026-09-29 at packaging time)*. No commit.
+- [x] 4. Fetch Impeccable's upstream `LICENSE` (Apache-2.0) for inclusion. Run the full test suite verbosely and capture it. Run the packaging script. It makes no commit, because its output is gitignored.
+- [x] 5. Verify:
   - unzip into the scratchpad and re-run the secret scan on the extracted files;
   - check that every manifest SHA-256 matches;
   - open the README, the session index and one readable transcript to confirm they read correctly;
@@ -64,6 +64,13 @@ Excluded entirely: `.env`, all `*.sqlite3` databases, `.venv/`, `node_modules/`,
 
   Set Status to `awaiting-rendezvous`. → `docs(plan): mark assessment-package ready for rendezvous`
 - [ ] **After acceptance (Sync):** add the packaging command to `doc/wiki/setup.md`, and mark the plan done. → `docs(wiki): sync after assessment-package`
+
+## Execution notes
+
+- **Task 2:** the packager's own secret scan failed its first run. It found the throwaway test passwords written literally in the script, study and plan (the redaction list itself). They were moved to a gitignored input file (`fix(tools): keep the redaction list out of the repository`); the rerun was clean.
+- **Task 3:** the README and SKILLS-USED.md live only in the gitignored `submission/inputs/`. Every skill claim cites a transcript timestamp. The plan's harden/audit/critique/polish passes are recorded as performed from the plan, **not** as loaded Impeccable reference files, because the transcript shows those files were never opened.
+- **Task 5, independent verification of the extracted ZIP:** 0 secret hits (every `.env` value, the email, every test password); 0 forbidden files (`.env`, `*.sqlite3`, `.venv`, `node_modules`); all manifest checksums match, with nothing unlisted or missing. The included test run: 133 tests OK.
+- **Rebuild:** the package was rebuilt after this plan update, so its "submitted commit" is the final HEAD.
 
 ## Decisions for you
 
