@@ -21,5 +21,5 @@ def signup(request):
             return redirect("home")
     else:
         form = SignUpForm()
-    return render(request, "accounts/signup.html", {"form": form})
+    return render(request, "accounts/signup.html", {"form": form, "signup_grant": settings.SIGNUP_GRANT_MICRO})
 

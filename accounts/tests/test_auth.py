@@ -38,3 +38,10 @@ class AuthFlowTests(TestCase):
     def test_login_page_is_public(self):
         self.assertEqual(self.client.get(reverse("login")).status_code, 200)
         self.assertEqual(self.client.get(reverse("signup")).status_code, 200)
+
+    def test_entry_pages_carry_the_identity(self):
+        login = self.client.get(reverse("login")).content.decode()
+        self.assertIn("Sign in to LightChat", login)
+        self.assertIn('class="brand-mark"', login)
+        signup = self.client.get(reverse("signup")).content.decode()
+        self.assertIn("You start with <strong>5.00</strong> demo credits", signup)

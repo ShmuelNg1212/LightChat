@@ -1,15 +1,17 @@
 {% extends "base.html" %}
+{% load credits %}
 {% block title %}Create account{% endblock %}
 {% block main_class %}page page-narrow{% endblock %}
 {% block content %}
-<section class="card auth-card">
-  <h1>Create an account</h1>
-  <p class="muted">You start with free demo credits to try every model.</p>
+<section class="card auth-card" aria-labelledby="auth-title">
+  {% include "partials/brand_mark.html" %}
+  <h1 id="auth-title">Create your LightChat account</h1>
+  <p class="auth-promise">You start with <strong>{{ signup_grant|credits:2 }}</strong> demo credits to try every model. They aren't real money.</p>
   <form method="post" class="stack">
     {% csrf_token %}
     {% include "partials/form_fields.html" %}
-    <button type="submit" class="button button-primary">Create account</button>
+    <button type="submit" class="button button-primary auth-submit">Create account</button>
   </form>
-  <p class="muted">Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+  <p class="auth-switch">Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
 </section>
 {% endblock %}

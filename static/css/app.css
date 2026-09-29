@@ -257,6 +257,15 @@ h2 { font-size: 1.2rem; }
   border-radius: var(--radius); padding: var(--space-5);
 }
 
+/* Sign-in and sign-up */
+.auth-card { margin-top: 6vh; padding: var(--space-6) var(--space-5); }
+.auth-card .brand-mark { width: 40px; height: 40px; margin-bottom: var(--space-4); }
+.auth-card h1 { font-size: 1.5rem; margin-bottom: var(--space-2); }
+.auth-promise { margin: 0 0 var(--space-5); color: var(--muted); }
+.auth-promise strong { color: var(--ink); font: 600 1.05em/1 var(--font-meter); }
+.auth-submit { width: 100%; margin-top: var(--space-5); }
+.auth-switch { margin: var(--space-5) 0 0; padding-top: var(--space-4); border-top: 1px solid var(--line); color: var(--muted); }
+
 .flash { list-style: none; margin: var(--space-3) auto 0; padding: 0 var(--space-4); max-width: 880px; }
 .flash li {
   padding: var(--space-3) var(--space-4); border-radius: var(--radius);

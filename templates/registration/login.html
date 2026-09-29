@@ -2,15 +2,16 @@
 {% block title %}Sign in{% endblock %}
 {% block main_class %}page page-narrow{% endblock %}
 {% block content %}
-<section class="card auth-card">
-  <h1>Sign in</h1>
-  <p class="muted">Pay only for what you use. No subscription.</p>
+<section class="card auth-card" aria-labelledby="auth-title">
+  {% include "partials/brand_mark.html" %}
+  <h1 id="auth-title">Sign in to LightChat</h1>
+  <p class="auth-promise">Pay only for what you use. No subscription.</p>
   <form method="post" class="stack">
     {% csrf_token %}
     {% include "partials/form_fields.html" %}
     <input type="hidden" name="next" value="{{ next }}">
-    <button type="submit" class="button button-primary">Sign in</button>
+    <button type="submit" class="button button-primary auth-submit">Sign in</button>
   </form>
-  <p class="muted">New here? <a href="{% url 'signup' %}">Create an account</a></p>
+  <p class="auth-switch">New to LightChat? <a href="{% url 'signup' %}">Create an account</a></p>
 </section>
 {% endblock %}
