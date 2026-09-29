@@ -91,7 +91,7 @@ Image inputs and provider file APIs are available. Files are private per account
 
 Docs read on 2026-09-29: [Django on Vercel](https://vercel.com/docs/frameworks/full-stack/django), [function limits](https://vercel.com/docs/functions/limitations), [environments](https://vercel.com/docs/deployments/environments) and [Deployment Protection](https://vercel.com/docs/deployment-protection). Status: **verified by deployment**.
 
-- **Account:** `shmuelng8310-5097`, team `shmuelng8310-5097s-projects`, **Hobby** (free, non-commercial). **Project:** `lightchat`. **Production domain:** `lightchat-five.vercel.app`.
+- **Account:** `shmuelng8310-5097`, team `shmuelng8310-5097s-projects`, **Hobby** (free, non-commercial). **Project:** `lightchat`, connected to GitHub `ShmuelNg1212/LightChat` (production branch `main`; Git-triggered deploys switched off). **Production domain:** `lightchat-five.vercel.app`.
 - **Django:** detected from `manage.py` and `WSGI_APPLICATION`. `collectstatic` runs automatically when `STATIC_ROOT` is set. Python version from `.python-version` (3.14 supported).
 - **Limits (Hobby):** functions last at most 300 s, including streaming; bodies are at most 4.5 MB; the function bundle is at most 500 MB.
 - **Streaming:** Python WSGI streaming responses reach the browser incrementally (observed on 2026-09-29).

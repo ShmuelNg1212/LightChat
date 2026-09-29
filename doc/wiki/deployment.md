@@ -13,7 +13,7 @@ LightChat is live at **https://lightchat-five.vercel.app**. It runs on Vercel's 
 
 - **Vercel project:** `lightchat` in `shmuelng8310-5097s-projects`. The local link is in `.vercel/` (gitignored).
 - **Configuration files:** [`vercel.json`](../../vercel.json) and [`.vercelignore`](../../.vercelignore).
-- **Git:** pushes to GitHub **don't deploy** (`git.deploymentEnabled: false`), so every deploy is a deliberate CLI command.
+- **Git:** the project is connected to GitHub [`ShmuelNg1212/LightChat`](https://github.com/ShmuelNg1212/LightChat) (production branch `main`). Pushes **don't deploy** (`git.deploymentEnabled: false` in `vercel.json`), so every deploy is a deliberate CLI command. Deployments show their commit on GitHub and in the Vercel dashboard.
 
 ## Environment variables (Vercel → Settings → Environment Variables)
 
