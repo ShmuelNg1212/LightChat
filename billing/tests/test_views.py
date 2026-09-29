@@ -14,8 +14,20 @@ class SignupGrantTests(TestCase):
         )
         user = get_user_model().objects.get(username="ana")
         wallet = services.get_wallet(user)
-        self.assertEqual(wallet.balance, 1_000_000)
+        self.assertEqual(wallet.balance, 5_000_000)
         self.assertEqual(wallet.entries.get().kind, LedgerEntry.Kind.GRANT)
+
+    def test_new_account_can_top_up_from_five(self):
+        self.client.post(
+            reverse("signup"),
+            {"username": "ana", "password1": "correct-horse-9", "password2": "correct-horse-9"},
+        )
+        page = self.client.get(reverse("credits"))
+        self.assertContains(page, "stop at 10.00 available credits")
+        self.assertNotContains(page, "disabled")
+        self.client.post(reverse("topup"))
+        user = get_user_model().objects.get(username="ana")
+        self.assertEqual(services.get_wallet(user).balance, 6_000_000)
 
 
 @override_settings(TOPUP_AMOUNT_MICRO=1_000_000, TOPUP_MAX_AVAILABLE_MICRO=2_000_000)
