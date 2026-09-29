@@ -9,8 +9,5 @@
     "config/wsgi.py": {
       "maxDuration": 300
     }
-  },
-  "git": {
-    "deploymentEnabled": false
   }
 }
