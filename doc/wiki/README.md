@@ -4,7 +4,7 @@ Living documentation. It describes the project **as it exists now**, not as plan
 
 ## Current state
 
-Litechat is a pay-as-you-go chat app. Users sign up, receive demo credits, and chat with three models reached through BUILD LLM Proxy (all answered by DeepSeek Flash). They see each reply's cost and their remaining balance, and their chats are saved. It runs locally. It is not deployed yet.
+Litechat is a pay-as-you-go chat app. Users sign up, receive 5.00 demo credits, and chat with three models reached through BUILD LLM Proxy (all answered by DeepSeek Flash). They see each reply's cost and their remaining balance, and their chats are saved. It runs locally. It is not deployed yet.
 
 Working agreement: [AGENTS.md](../../AGENTS.md), mirrored in [CLAUDE.md](../../CLAUDE.md).
 
@@ -24,4 +24,4 @@ Real captured proxy responses (redacted) are in [`doc/fixtures/proxy/`](../fixtu
 | Request | Study | Plan | Status |
 |---|---|---|---|
 | Litechat core functionality | [study](../study/2026-09-29-1243-litechat-core.md) | [plan](../plan/2026-09-29-1258-litechat-core.md) | Done (accepted 2026-09-29) |
-| Longer replies and more starting credit | [study](../study/2026-09-29-1347-reply-limit-and-starting-credit.md) | [plan](../plan/2026-09-29-1348-reply-limit-and-starting-credit.md) | Awaiting rendezvous |
+| Longer replies and more starting credit | [study](../study/2026-09-29-1347-reply-limit-and-starting-credit.md) | [plan](../plan/2026-09-29-1348-reply-limit-and-starting-credit.md) | Done (accepted 2026-09-29) |

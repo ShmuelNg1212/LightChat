@@ -57,7 +57,7 @@ Captured with `python manage.py probe_proxy --bad-key`. Redacted transcripts are
 
 ### Output-token limit (verified 2026-09-29)
 
-All three interfaces accept an output limit of **25,000 tokens** (`max_tokens` / `max_output_tokens` / `maxOutputTokens`), verified with `probe_proxy --no-save --max-tokens 25000`. Each returned HTTP 200 and a normal completion. The proxy's documented maximum is still unknown. Whether it actually *generates* that many tokens in one reply is checked separately (see the reply-limit plan).
+All three interfaces accept an output limit of **25,000 tokens** (`max_tokens` / `max_output_tokens` / `maxOutputTokens`), verified with `probe_proxy --no-save --max-tokens 25000`. Each returned HTTP 200 and a normal completion. The proxy's documented maximum is still unknown. A live reply confirmed that generation continues past the old 2,048 cut-off (3,140 output tokens, ended normally) at about **135 tokens/s**.
 
 ### Connectivity (observed 2026-09-29)
 

@@ -27,8 +27,8 @@ User ─1:1─ Wallet ─1:n─ LedgerEntry            (append-only)
 ```
 
 - **Money** is integer **micro-credits** (µcr, 1 credit = 1,000,000 µcr). No floats. `billing/money.py` converts and formats, rounding costs up.
-- **Wallet:** `balance` (settled) and `held` (reserved). Spendable = `balance − held`.
-- **LedgerEntry:** kind (`grant`, `topup`, `hold`, `release`, `charge`, `adjust`), balance change, held change, and snapshots after the change. A test checks that the wallet always equals the sum of its entries. The admin view is read-only.
+- **Wallet:** `balance` (settled) and `held` (reserved). Spendable = `balance − held`. Amounts: sign-up grant `SIGNUP_GRANT_MICRO` (5.00), top-up `TOPUP_AMOUNT_MICRO` (1.00) up to `TOPUP_MAX_AVAILABLE_MICRO` (10.00), all in `config/settings.py`.
+- **LedgerEntry:** kind (`grant`, `topup`, `hold`, `release`, `charge`, `adjust`), balance change, held change, and snapshots after the change. A test checks that the wallet always equals the sum of its entries. The admin view is read-only. `LedgerEntry.wallet` is `PROTECT`, so deleting a user with any history fails. Credit changes to existing users go through the ledger, as in the data migration `billing/0002_raise_existing_to_five`.
 - **Generation:** one metered request. It stores a **price snapshot** (model label, provider, upstream ID, rates, max output tokens), the `reserved` hold, the final `charged`, token counts, status, finish reason and error. It is unique per `(user, client_request_id)`. Deleting a conversation keeps its generations (and so the ledger) intact.
 
 ## Sending a message (data flow)
@@ -61,7 +61,7 @@ Every wallet change is a conditional `UPDATE … WHERE balance − held >= amoun
 
 ### Never retry a sent request
 
-The proxy client uses `httpx.HTTPTransport(retries=3)`, which retries **connection attempts only** (nothing was sent). A request that was sent is never retried, following the proxy docs. Timeouts are 5 s to connect, 90 s between chunks, and 300 s per reply.
+The proxy client uses `httpx.HTTPTransport(retries=3)`, which retries **connection attempts only** (nothing was sent). A request that was sent is never retried, following the proxy docs. Timeouts are 5 s to connect, 90 s between chunks, and 20 minutes per reply (sized for the 25,000-token limit).
 
 ### Stop and disconnects
 

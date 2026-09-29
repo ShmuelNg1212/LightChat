@@ -2,7 +2,7 @@
 
 - **Date:** 2026-09-29 13:48
 - **Study:** [../study/2026-09-29-1347-reply-limit-and-starting-credit.md](../study/2026-09-29-1347-reply-limit-and-starting-credit.md) (see its Review)
-- **Status:** awaiting-rendezvous
+- **Status:** done
 
 > **Approved 2026-09-29.** The Gardener replied "approved".
 
@@ -21,6 +21,10 @@
 - [x] 5. Sign-up grant 5.00; top-up cap 10.00; update the tests that assumed 1.00 and 5.00. → `feat(billing): start new accounts with 5.00 credits`
 - [x] 6. Data migration: grant each existing wallet whose available credit is below 5.00 the difference, as a ledger `grant` entry with the memo above, so the balance still equals the ledger total. Add a test. → `feat(billing): raise existing accounts to 5.00 credits`
 - [x] 7. Verify: full test suite. Apply the migrations to the development database and confirm `shm` shows 5.0000. **Paid:** one live long reply ("write about 3,000 words") to confirm the proxy doesn't cut replies off below the new limit, and to measure its speed. Browser check that the Credits page and the cut-off notice show the new limit. Set Status to `awaiting-rendezvous`. → `docs(plan): mark reply-limit-and-starting-credit ready for rendezvous`
+
+## Outcome
+
+Accepted by the Gardener on 2026-09-29 ("everything works"). The wiki was synced in `docs(wiki): sync after reply-limit-and-starting-credit`.
 
 ## Execution notes
 

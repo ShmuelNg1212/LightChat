@@ -54,13 +54,13 @@ Create an admin account (needed to review held credit at `/admin/`):
 .venv/bin/python manage.py test
 ```
 
-106 tests. They never call the real proxy: an `httpx.MockTransport` replaces the network, and real captured responses in `doc/fixtures/proxy/` are replayed. SQLite tests use a file-backed test database (`test_db.sqlite3`, gitignored) so locking behaves as in development.
+115 tests. They never call the real proxy: an `httpx.MockTransport` replaces the network, and real captured responses in `doc/fixtures/proxy/` are replayed. SQLite tests use a file-backed test database (`test_db.sqlite3`, gitignored) so locking behaves as in development.
 
 ## Operational commands
 
 | Command | What it does | Cost |
 |---|---|---|
-| `manage.py probe_proxy [--provider P] [--bad-key]` | Makes one tiny streamed request per configured interface and rewrites the redacted fixtures in `doc/fixtures/proxy/` | **Paid**: about 190 tokens per interface |
+| `manage.py probe_proxy [--provider P] [--bad-key] [--max-tokens N] [--no-save]` | Makes one tiny streamed request per configured interface. Rewrites the redacted fixtures in `doc/fixtures/proxy/` unless `--no-save` is given (use that to check a setting such as a new output limit) | **Paid**: about 190 tokens per interface |
 | `manage.py reconcile_stale_generations [--minutes 10]` | Flags replies stuck "in progress" (e.g. after a server restart) for admin review | Free |
 
 ## Not yet set up
