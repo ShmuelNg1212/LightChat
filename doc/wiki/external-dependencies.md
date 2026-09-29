@@ -17,7 +17,7 @@ The designated upstream for all model calls. Docs: <https://proxy.litechat.ai/do
 | OpenAI Chat Completions | `https://proxy.litechat.ai/openai/v1` | `POST /chat/completions` | `gpt-5.6-luna` | `Authorization: Bearer <OpenAI key>` | documented |
 | OpenAI Responses | `https://proxy.litechat.ai/openai/v1` | `POST /responses` | `gpt-5.6-luna` | same OpenAI key | documented (not used by the plan) |
 | Anthropic Messages | `https://proxy.litechat.ai/anthropic` | `POST /v1/messages` | `claude-haiku-4-5-20251001` | `x-api-key: <Anthropic key>` and `anthropic-version: 2023-06-01` | documented |
-| Google Gemini generateContent | `https://proxy.litechat.ai/google` | not read | `gemini-3.8-flash` | `x-goog-api-key: <Google key>` | **needed**: docs page timed out |
+| Google Gemini generateContent | `https://proxy.litechat.ai/google` | `POST /v1beta/models/gemini-3.8-flash:generateContent` (stream: `:streamGenerateContent?alt=sse`) | `gemini-3.8-flash` (in the URL) | `x-goog-api-key: <Google key>` | documented |
 
 All requests send JSON with `Content-Type: application/json`. `GET /v1/models` does not exist (404), so models cannot be discovered at runtime.
 
@@ -32,6 +32,12 @@ All requests send JSON with `Content-Type: application/json`. `GET /v1/models` d
 - Request: `model`, `messages` (`user` / `assistant`), separate top-level `system`, `max_tokens`, `thinking: {"type": "disabled"}`. Numeric thinking budgets are unsupported.
 - Response: `content` is a list of blocks; `text` blocks carry the answer. `stop_reason` is `end_turn` (normal), `max_tokens` (truncated) or `tool_use`. Usage: `usage.input_tokens`, `usage.output_tokens`.
 - Streaming: `"stream": true`. SSE with message and indexed content-block events; text arrives as `content_block_delta` with a `text_delta`. The message ends at `message_stop`; check the stop reason. A block ending is not the message ending.
+
+### Google Gemini generateContent (documented)
+
+- Request: `contents` (roles `user` / `model`, each with `parts: [{"text": ...}]`), separate top-level `systemInstruction`, `generationConfig.maxOutputTokens`, `generationConfig.thinkingConfig.thinkingBudget: 0` (disables thinking; other numeric budgets unsupported). Only one candidate is supported.
+- Response: text in `candidates[].content.parts[].text`. `finishReason` is `STOP` (normal), `MAX_TOKENS` (truncated) or `SAFETY` (filtered). Usage: `usageMetadata.promptTokenCount`, `usageMetadata.candidatesTokenCount`, `usageMetadata.totalTokenCount`.
+- Streaming: replace `:generateContent` with `:streamGenerateContent?alt=sse`. SSE data carries candidate parts, finish information or usage; usage events can omit candidates. There is no `[DONE]`: read to the end of the stream and handle later errors; a finish reason alone is not enough.
 
 ### OpenAI Responses (documented, not used)
 
