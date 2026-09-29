@@ -34,6 +34,18 @@ class ModelOffering(models.Model):
     def display_name(self):
         return f"{self.label} · {self.get_provider_display()} interface"
 
+    EXAMPLE_INPUT_TOKENS = 1_000
+    EXAMPLE_OUTPUT_TOKENS = 500
+
+    @property
+    def example_cost(self):
+        """µcr for a worked example shown next to the price (a 1,000-token question, 500-token answer)."""
+        from billing.money import cost_for_tokens
+
+        return cost_for_tokens(self.EXAMPLE_INPUT_TOKENS, self.input_rate) + cost_for_tokens(
+            self.EXAMPLE_OUTPUT_TOKENS, self.output_rate
+        )
+
     @property
     def is_configured(self):
         return bool(settings.PROXY_KEYS.get(self.provider))

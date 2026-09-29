@@ -34,3 +34,12 @@ class ReplyLimitTests(TestCase):
 
         for offering in ModelOffering.objects.all():
             self.assertEqual(cost_for_tokens(offering.max_output_tokens, offering.output_rate), 500_000)
+
+
+class ExampleCostTests(TestCase):
+    def test_example_uses_real_rates(self):
+        offering = ModelOffering.objects.get(provider="openai")
+        # 1,000 x 5 µcr + 500 x 20 µcr at the seeded demo rates
+        self.assertEqual(offering.example_cost, 15_000)
+        offering.output_rate = 40_000_000
+        self.assertEqual(offering.example_cost, 25_000)

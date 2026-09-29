@@ -58,18 +58,19 @@
         <label for="prompt" class="visually-hidden">Message</label>
         <textarea id="prompt" name="prompt" rows="1" maxlength="16000" placeholder="Message LightChat" required></textarea>
         <div class="composer-bar">
-          <label for="model" class="visually-hidden">Model</label>
-          <select id="model" name="model">
-            {% for o in offerings %}
-              <option value="{{ o.slug }}" data-price="In {{ o.input_rate|credits:2 }} · Out {{ o.output_rate|credits:2 }} credits per 1M tokens"{% if o.pk == selected_offering %} selected{% endif %}>{{ o.display_name }}</option>
-            {% endfor %}
-          </select>
-          <span class="price" id="model-price"></span>
-          <span class="spacer"></span>
-          <button type="button" class="button button-small" id="stop" hidden>Stop</button>
-          <button type="submit" class="button button-primary button-small" id="send">Send</button>
+          <div class="tariff">
+            <label for="model" class="tariff-label">Model</label>
+            <select id="model" name="model" aria-describedby="model-price">
+              {% for o in offerings %}
+                <option value="{{ o.slug }}" data-price="In {{ o.input_rate|credits:2 }} · Out {{ o.output_rate|credits:2 }} credits per 1M tokens" data-example="{{ o.example_cost|credits }}"{% if o.pk == selected_offering %} selected{% endif %}>{{ o.display_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <button type="button" class="button button-small" id="stop" hidden><svg class="icon" aria-hidden="true"><use href="#i-stop"/></svg>Stop</button>
+          <button type="submit" class="button button-primary button-small" id="send"><svg class="icon" aria-hidden="true"><use href="#i-send"/></svg>Send</button>
         </div>
       </div>
+      <p class="tariff-rate" id="model-price"><span id="model-rate"></span> <span class="tariff-example">A 1,000-token question with a 500-token answer costs <strong id="model-example"></strong> credits.</span></p>
       <p class="composer-note">All models here are answered by DeepSeek Flash through different provider interfaces, so replies won't match the named providers. Prices are in demo credits, not real money.</p>
     </form>
     {% else %}

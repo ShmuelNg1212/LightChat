@@ -46,8 +46,13 @@
   const nearBottom = () => scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < 80;
   const scrollToBottom = () => { scroller.scrollTop = scroller.scrollHeight; };
 
-  const price = document.getElementById("model-price");
-  const showPrice = () => { price.textContent = modelSelect.selectedOptions[0].dataset.price || ""; };
+  const rate = document.getElementById("model-rate");
+  const example = document.getElementById("model-example");
+  const showPrice = () => {
+    const option = modelSelect.selectedOptions[0];
+    rate.textContent = option.dataset.price + ".";
+    example.textContent = option.dataset.example;
+  };
   modelSelect.addEventListener("change", showPrice);
   showPrice();
 
