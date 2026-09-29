@@ -25,3 +25,8 @@ htmlcov/
 .DS_Store
 .idea/
 .vscode/
+
+# Impeccable: machine-local state (shared config.json and live/config.json are tracked)
+.impeccable/hook.cache.json
+.impeccable/config.local.json
+.impeccable/live/inject-journal.json
