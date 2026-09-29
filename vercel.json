@@ -1,6 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "regions": ["fra1"],
+  "framework": "django",
+  "regions": [
+    "fra1"
+  ],
   "buildCommand": "DATABASE_URL=\"${DATABASE_URL_UNPOOLED:-$DATABASE_URL}\" python manage.py migrate --noinput",
   "functions": {
     "config/wsgi.py": {
