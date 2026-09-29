@@ -98,6 +98,15 @@ DATABASES = {
         conn_max_age=60,
     )
 }
+if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
+    # Concurrent requests (streams, several tabs) must wait for the write lock
+    # rather than fail: take it at transaction start and allow a busy timeout.
+    DATABASES["default"]["OPTIONS"] = {
+        "transaction_mode": "IMMEDIATE",
+        "timeout": 20,
+        "init_command": "PRAGMA journal_mode=WAL;",
+    }
+    DATABASES["default"]["TEST"] = {"NAME": BASE_DIR / "test_db.sqlite3"}
 
 
 # Password validation
