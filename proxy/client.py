@@ -20,9 +20,10 @@ from .types import Cancelled, Done, Message, ProxyError, TextDelta
 
 log = logging.getLogger("litechat.proxy")
 
-TIMEOUT = httpx.Timeout(connect=5.0, read=90.0, write=10.0, pool=10.0)
 CONNECT_RETRIES = 3  # connection attempts only; see module docstring
-MAX_DURATION = 20 * 60.0  # seconds for a whole reply; a 25,000-token reply needs >= ~21 tokens/s
+# Time limits come from settings (REPLY_MAX_SECONDS, REPLY_CHUNK_TIMEOUT_SECONDS):
+# locally 20 min per reply and 90 s between chunks; on Vercel both must fit
+# inside the function's maxDuration, so the app ends the reply itself.
 
 # Status codes returned before generation starts, so nothing was billed.
 REJECTIONS = {
@@ -45,7 +46,8 @@ def set_transport(transport: httpx.BaseTransport | None) -> None:
 
 def make_http_client() -> httpx.Client:
     transport = _transport or httpx.HTTPTransport(retries=CONNECT_RETRIES)
-    return httpx.Client(base_url=settings.PROXY_BASE_URL, timeout=TIMEOUT, transport=transport)
+    timeout = httpx.Timeout(connect=5.0, read=settings.REPLY_CHUNK_TIMEOUT_SECONDS, write=10.0, pool=10.0)
+    return httpx.Client(base_url=settings.PROXY_BASE_URL, timeout=timeout, transport=transport)
 
 
 def stream_reply(
@@ -75,7 +77,7 @@ def stream_reply(
                         return
                     if should_cancel():
                         raise Cancelled()
-                    if time.monotonic() - started > MAX_DURATION:
+                    if time.monotonic() - started > settings.REPLY_MAX_SECONDS:
                         raise ProxyError("timeout", "The reply took too long and was stopped.")
         except (httpx.ConnectError, httpx.ConnectTimeout) as exc:
             # The request never reached the service: nothing to bill.

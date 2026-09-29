@@ -161,6 +161,11 @@ PROXY_KEYS = {
     "anthropic": env("BUILD_ANTHROPIC_KEY", default=""),
     "google": env("BUILD_GOOGLE_KEY", default=""),
 }
+# A whole reply may stream this long (a 25,000-token reply needs >= ~21 tokens/s),
+# with at most this long between chunks. On Vercel, their sum must stay under
+# the function's maxDuration (300 s on Hobby) so the app, not the platform, ends it.
+REPLY_MAX_SECONDS = env.float("REPLY_MAX_SECONDS", default=20 * 60.0)
+REPLY_CHUNK_TIMEOUT_SECONDS = env.float("REPLY_CHUNK_TIMEOUT_SECONDS", default=90.0)
 
 # Log statuses and identifiers only; prompts, replies and headers are never logged.
 LOGGING = {

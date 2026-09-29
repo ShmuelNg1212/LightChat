@@ -137,3 +137,16 @@ class DurationLimitTests(SimpleTestCase):
         with self.assertRaises(ProxyError) as ctx:
             self.run_with_clock(20 * 60 + 1)
         self.assertEqual((ctx.exception.kind, ctx.exception.nothing_generated), ("timeout", False))
+
+    @override_settings(REPLY_MAX_SECONDS=260.0)
+    def test_configured_limit_stops_the_reply_before_the_platform_does(self):
+        with self.assertRaises(ProxyError) as ctx:
+            self.run_with_clock(261)
+        self.assertEqual(ctx.exception.kind, "timeout")
+
+    @override_settings(REPLY_CHUNK_TIMEOUT_SECONDS=25.0)
+    def test_gap_between_chunks_is_configurable(self):
+        from proxy.client import make_http_client
+
+        with make_http_client() as http:
+            self.assertEqual((http.timeout.read, http.timeout.connect), (25.0, 5.0))
