@@ -8,17 +8,17 @@ The Gardener asked for the Study and Plan together, so both are approved in one 
 ## Tasks
 
 ### A. Code (local, every commit green on SQLite)
-- [ ] 1. Add `psycopg[binary]` to requirements → `build(deps): add the PostgreSQL driver`
-- [ ] 2. Make the database settings safe behind a pooler. For Postgres: disable server-side cursors, turn on health checks, and read the connection age from `DB_CONN_MAX_AGE`. Add tests → `feat(config): make Postgres settings safe behind PgBouncer`
-- [ ] 3. Install Homebrew PostgreSQL locally and run the **full suite on Postgres**. Fix anything specific to Postgres → `fix(...)` only if needed
-- [ ] 4. Make the reply limits configurable: `REPLY_MAX_SECONDS` (default 1200) and `REPLY_CHUNK_TIMEOUT_SECONDS` (default 90). Add tests → `feat(proxy): make reply time limits configurable`
-- [ ] 5. Production security, active only when `VERCEL` is set or `HTTPS_ONLY=True`:
+- [x] 1. Add `psycopg[binary]` to requirements → `build(deps): add the PostgreSQL driver`
+- [x] 2. Make the database settings safe behind a pooler. For Postgres: disable server-side cursors, turn on health checks, and read the connection age from `DB_CONN_MAX_AGE`. Add tests → `feat(config): make Postgres settings safe behind PgBouncer`
+- [x] 3. Install Homebrew PostgreSQL locally and run the **full suite on Postgres**. Fix anything specific to Postgres → `fix(...)` only if needed
+- [x] 4. Make the reply limits configurable: `REPLY_MAX_SECONDS` (default 1200) and `REPLY_CHUNK_TIMEOUT_SECONDS` (default 90). Add tests → `feat(proxy): make reply time limits configurable`
+- [x] 5. Production security, active only when `VERCEL` is set or `HTTPS_ONLY=True`:
   - trust `X-Forwarded-Proto`, SSL redirect, `Secure` cookies, HSTS for one year;
   - build `ALLOWED_HOSTS` from the Vercel system variables;
   - silence mail.E001 with a comment.
 
   Add tests; `check --deploy` must come back clean → `feat(config): harden settings for HTTPS deployments`
-- [ ] 6. `vercel.json`:
+- [x] 6. `vercel.json`:
   - `regions: ["fra1"]`;
   - `maxDuration: 300` on `config/wsgi.py`;
   - `git.deploymentEnabled: false`;
@@ -26,7 +26,7 @@ The Gardener asked for the Study and Plan together, so both are approved in one 
   - `excludeFiles` for the tests and the static folder.
 
   Add `.vercelignore`. Add `.vercel/` to `.gitignore` → `build(vercel): add Vercel project configuration`
-- [ ] 7. Update `.env.example` with `DB_CONN_MAX_AGE`, `REPLY_MAX_SECONDS`, `REPLY_CHUNK_TIMEOUT_SECONDS`, `HTTPS_ONLY` and the Neon variables → `docs(env): document deployment variables`
+- [x] 7. Update `.env.example` with `DB_CONN_MAX_AGE`, `REPLY_MAX_SECONDS`, `REPLY_CHUNK_TIMEOUT_SECONDS`, `HTTPS_ONLY` and the Neon variables → `docs(env): document deployment variables`
 
 ### B. Preview (needs the Gardener's logins and clicks)
 - [ ] 8. Create and link the Vercel project with `npx vercel@latest link`. No deploy yet, no Git auto-deploys
@@ -34,7 +34,7 @@ The Gardener asked for the Study and Plan together, so both are approved in one 
 - [ ] 10. Set the env vars for Production and Preview:
   - `SECRET_KEY`: random, different per environment;
   - the three proxy keys, piped from `.env`;
-  - `REPLY_MAX_SECONDS=270`;
+  - `REPLY_MAX_SECONDS=260`;
   - `REPLY_CHUNK_TIMEOUT_SECONDS=25`;
   - `DB_CONN_MAX_AGE=0`.
 
@@ -72,3 +72,8 @@ The Gardener asked for the Study and Plan together, so both are approved in one 
 - Task 8: your `npx vercel@latest login`.
 - Task 9: Neon setup and the bypass secret (dashboard).
 - Task 16: your `createsuperuser` run.
+
+## Notes
+- Task 3: the full suite (135 tests at the time) passed on local PostgreSQL 17 with no changes needed.
+- Task 4: the reply cap on Vercel is **260 s** instead of the Study's ~270 s. The worst case is the cap plus one 25 s wait between chunks, which is 285 s, safely under the 300 s function limit.
+- Task 6 also added a guard (`271c9d0`): on Vercel the app refuses to start without `DATABASE_URL`, so it can never quietly run on a throwaway SQLite file.
