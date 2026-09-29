@@ -11,6 +11,7 @@ import logging
 import time
 import uuid
 from dataclasses import dataclass
+from datetime import timedelta
 
 from django.db import IntegrityError, transaction
 from django.utils import timezone
@@ -19,7 +20,7 @@ from billing import services as billing
 from billing.money import cost_for_tokens
 from catalog.models import ModelOffering
 from proxy.client import stream_reply
-from proxy.types import Cancelled, Done, Finish, Message as ProxyMessage, ProxyError, TextDelta
+from proxy.types import Cancelled, Done, Message as ProxyMessage, ProxyError, TextDelta
 
 from .models import Conversation, Generation, Message
 
@@ -330,4 +331,42 @@ def request_cancel(user, generation_id: int) -> bool:
         Generation.objects.filter(pk=generation_id, user=user, status__in=Generation.ACTIVE).update(
             cancel_requested=True
         )
+    )
+
+
+def resolve(generation_id: int, *, charge_held: bool, note: str = "") -> bool:
+    """Settle a generation whose usage is unknown: charge the full hold, or release it.
+
+    Returns False if it was not awaiting reconciliation (e.g. already resolved).
+    """
+    with transaction.atomic():
+        claimed = Generation.objects.filter(
+            pk=generation_id, status=Generation.Status.NEEDS_RECONCILIATION
+        ).update(status=Generation.Status.RECONCILED)
+        if not claimed:
+            return False
+        generation = Generation.objects.select_related("user").get(pk=generation_id)
+        if charge_held:
+            billing.settle(generation.user, held=generation.reserved, charge=generation.reserved, memo="Reviewed reply: held amount charged")
+            charged, resolution = generation.reserved, "Charged the held amount because usage was unknown."
+        else:
+            billing.release(generation.user, held=generation.reserved, memo="Reviewed reply: not charged")
+            charged, resolution = 0, "Not charged; the held credit was returned."
+        if note:
+            resolution = f"{resolution} {note}"
+        generation.charged = charged
+        generation.resolution = resolution[:200]
+        generation.save(update_fields=["charged", "resolution"])
+    log.info("generation %s reconciled: charged %s µcr", generation_id, charged)
+    return True
+
+
+def flag_stale(older_than_minutes: int = 10) -> int:
+    """Active generations older than the limit lost their worker (e.g. a restart)."""
+    cutoff = timezone.now() - timedelta(minutes=older_than_minutes)
+    return Generation.objects.filter(status__in=Generation.ACTIVE, created_at__lt=cutoff).update(
+        status=Generation.Status.NEEDS_RECONCILIATION,
+        error_kind="stale",
+        error_message="The reply was interrupted on our side.",
+        finished_at=timezone.now(),
     )
