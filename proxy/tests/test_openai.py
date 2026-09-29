@@ -119,8 +119,10 @@ class OpenAIAdapterTests(SimpleTestCase):
         self.assertEqual((ctx.exception.kind, ctx.exception.nothing_generated), ("not_configured", True))
 
 
-@override_settings(PROXY_KEYS=KEYS, PROXY_BASE_URL="https://proxy.test")
+@override_settings(PROXY_KEYS=KEYS, PROXY_BASE_URL="https://proxy.test", REPLY_MAX_SECONDS=20 * 60.0)
 class DurationLimitTests(SimpleTestCase):
+    """The local default (20 min); pinned so a deployment's REPLY_MAX_SECONDS can't leak in."""
+
     def run_with_clock(self, *elapsed):
         from unittest import mock
 
