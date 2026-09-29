@@ -93,14 +93,47 @@
     textarea.setAttribute("aria-busy", String(value));
   }
 
-  function setBalance(event) {
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  // The settle: count the available figure to its new value and close the held segment.
+  function countTo(node, target) {
+    const from = parseFloat(node.textContent.replace(/,/g, ""));
+    const to = parseFloat(target.replace(/,/g, ""));
+    if (reducedMotion.matches || !isFinite(from) || !isFinite(to) || from === to) {
+      node.textContent = target;
+      return;
+    }
+    const start = performance.now();
+    const duration = 520;
+    const step = (now) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 4);
+      node.textContent = t < 1 ? (from + (to - from) * eased).toFixed(4) : target;
+      if (t < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  function setBalance(event, { settle = false } = {}) {
     const available = document.getElementById("balance-available");
     const held = document.getElementById("balance-held");
     const heldValue = document.getElementById("balance-held-value");
-    if (available && event.available) available.textContent = event.available;
-    if (held && heldValue) {
-      held.hidden = !event.held;
-      if (event.held) heldValue.textContent = event.held;
+    if (available && event.available) {
+      if (settle) countTo(available, event.available);
+      else available.textContent = event.available;
+    }
+    if (!held || !heldValue) return;
+    if (event.held) {
+      held.classList.remove("is-settling");
+      held.hidden = false;
+      heldValue.textContent = event.held;
+    } else if (!held.hidden) {
+      if (settle && !reducedMotion.matches) {
+        held.classList.add("is-settling");
+        held.addEventListener("animationend", () => { held.hidden = true; held.classList.remove("is-settling"); }, { once: true });
+      } else {
+        held.hidden = true;
+      }
     }
   }
 
@@ -248,7 +281,7 @@
         const follow = nearBottom();
         const finished = fromHTML(event.html);
         reply.article.replaceWith(finished);
-        setBalance(event);
+        setBalance(event, { settle: true });
         if (follow) scrollToBottom();
         announce(event.status === "completed" ? "Reply finished." : "Reply did not finish.");
       }

@@ -182,6 +182,16 @@ h2 { font-size: 1.2rem; }
   display: inline-block; width: 8px; height: 8px; border-radius: 50%;
   background: var(--pulse-mark); flex: none;
 }
+/* The pulse: blinks like a meter's usage light while credit is held */
+.pulse-light.is-live, .readout-held .pulse-light { animation: pulse 1.1s steps(1, end) infinite; }
+@keyframes pulse { 0% { opacity: 1; } 55% { opacity: 0.2; } }
+/* The settle: the held segment closes as the charge lands */
+.readout-held.is-settling { animation: settle-out 420ms var(--ease-out) forwards; }
+@keyframes settle-out { to { opacity: 0; transform: translateX(-6px); } }
+@media (prefers-reduced-motion: reduce) {
+  .pulse-light.is-live, .readout-held .pulse-light { animation: none; }
+  .readout-held.is-settling { animation: none; }
+}
 
 .account { margin-left: auto; display: flex; align-items: center; gap: var(--space-4); }
 .account form { margin: 0; }
