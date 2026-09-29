@@ -1,7 +1,7 @@
 # Study: Deploy LightChat to Vercel
 - **Date:** 2026-09-29 16:41
 - **Request:** "Prepare and deploy LightChat to Vercel." Check Vercel's current docs for streaming, authentication, database persistence, static assets and runtime limits, and don't assume the existing architecture works unchanged. Keep secrets server-side and out of Git. Deploy a preview and test it, then pause for acceptance before production. No purchases, domain changes or replacing existing production deployments without approval.
-- **Status:** awaiting-approval
+- **Status:** approved
 
 ## Intended Outcome
 LightChat runs on Vercel with the same behavior it has locally, for example `https://lightchat-<hash>.vercel.app`.
@@ -121,3 +121,6 @@ This follows Vercel's zero-config Django path: no custom entrypoint, and no ASGI
 - **Proxy connectivity from Frankfurt** is unknown. It will be measured on the preview.
 - **Rollback:** `vercel rollback` or promoting a previous deployment restores the code instantly, but it doesn't undo database migrations. This will be documented.
 - **Questions for you:** (1) Is the **Hobby plan with a ~270 s reply cap** OK, or do you want Pro? (2) Is the **Frankfurt region** OK, or are your users mostly in Asia (Singapore)?
+
+## Review
+- **2026-09-29:** Approved by the Gardener with the Plan. Decisions: stay on the **Vercel Hobby (free)** plan with the ~270 s reply cap; use the **Frankfurt** region (`fra1`, Neon `aws-eu-central-1`). The Gardener asked to be guided through the Neon setup once the Vercel project exists.

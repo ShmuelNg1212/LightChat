@@ -1,7 +1,7 @@
 # Plan: Deploy LightChat to Vercel
 - **Date:** 2026-09-29 16:41
 - **Study:** [../study/2026-09-29-1641-vercel-deployment.md](../study/2026-09-29-1641-vercel-deployment.md)
-- **Status:** awaiting-approval
+- **Status:** in-progress
 
 The Gardener asked for the Study and Plan together, so both are approved in one step.
 
