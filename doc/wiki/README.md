@@ -24,4 +24,4 @@ Real captured proxy responses (redacted) are in [`doc/fixtures/proxy/`](../fixtu
 | Request | Study | Plan | Status |
 |---|---|---|---|
 | Litechat core functionality | [study](../study/2026-09-29-1243-litechat-core.md) | [plan](../plan/2026-09-29-1258-litechat-core.md) | Done (accepted 2026-09-29) |
-| Longer replies and more starting credit | [study](../study/2026-09-29-1347-reply-limit-and-starting-credit.md) | — | Study awaiting approval |
+| Longer replies and more starting credit | [study](../study/2026-09-29-1347-reply-limit-and-starting-credit.md) | [plan](../plan/2026-09-29-1348-reply-limit-and-starting-credit.md) | Plan awaiting approval |

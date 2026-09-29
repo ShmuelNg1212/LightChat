@@ -2,7 +2,7 @@
 
 - **Date:** 2026-09-29 13:47
 - **Request:** "Increase the limit so that each response can use up to 0.5 credits. Also make the available credits 5 and keep the option to add 1 credit. Follow the workflow."
-- **Status:** awaiting-approval
+- **Status:** approved (see Review)
 
 ## Intended Outcome
 
@@ -68,3 +68,13 @@ See [architecture.md](../wiki/architecture.md) and [features.md](../wiki/feature
 4. **Actual length vs. limit:** the model may still end long replies on its own well before 25,000 tokens. The limit allows longer replies but doesn't force them.
 5. **Proxy limits:** if an interface accepts less than 25,000, its model gets a lower limit and the plan's Rendezvous reports it.
 6. **Upstream cost:** long replies consume more of the shared proxy account's budget (outside users' demo credit). No budget was given; the plan's live verification uses at most one long reply.
+
+---
+
+## Review (2026-09-29 13:48)
+
+**Outcome:** approved, with the Gardener's answers:
+
+1. The 0.5-credit cap applies to the **reply's writing** (option A): `max_output_tokens` = 25,000, with reading charged on top.
+2. The top-up cap is raised to **10.00** (option D); top-ups stay +1.00.
+3. The existing account `shm` is **topped up to 5.00** as a one-time grant recorded in its credit history. This is implemented for every existing wallet below 5.00 (today only `shm`), so it behaves the same on any copy of the database.
