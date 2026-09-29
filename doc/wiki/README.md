@@ -53,4 +53,4 @@ A test (`chat/tests/test_branding.py`) fails if "Litechat" appears on any user-f
 | LightChat rebrand (slice 1) | [study](../study/2026-09-29-1357-lightchat-rebrand.md) | [plan](../plan/2026-09-29-1406-lightchat-rebrand.md) · [brief](../design/2026-09-29-1357-lightchat-identity-brief.md) | Done (accepted 2026-09-29) |
 | Assessment submission package | [study](../study/2026-09-29-1456-assessment-package.md) | [plan](../plan/2026-09-29-1456-assessment-package.md) | Done (accepted 2026-09-29) |
 | Vercel deployment | [study](../study/2026-09-29-1641-vercel-deployment.md) | [plan](../plan/2026-09-29-1641-vercel-deployment.md) | Done (live 2026-09-29) |
-| Automatic deploys from GitHub | [study](../study/2026-09-29-1730-github-auto-deploy.md) | [plan](../plan/2026-09-29-1730-github-auto-deploy.md) | In progress |
+| Automatic deploys from GitHub | [study](../study/2026-09-29-1730-github-auto-deploy.md) | [plan](../plan/2026-09-29-1730-github-auto-deploy.md) | Done (accepted 2026-09-29) |

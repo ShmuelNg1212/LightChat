@@ -1,7 +1,7 @@
 # Plan: Automatic deploys from GitHub
 - **Date:** 2026-09-29 17:30
 - **Study:** [../study/2026-09-29-1730-github-auto-deploy.md](../study/2026-09-29-1730-github-auto-deploy.md)
-- **Status:** awaiting-rendezvous
+- **Status:** done
 
 ## Tasks
 - [x] 1. `.vercelignore`: keep uploading `doc/fixtures/` and keep excluding the rest of `doc/` → `build(vercel): upload the proxy fixtures the tests replay`
@@ -31,3 +31,4 @@ Nothing. The GitHub connection is verified.
 - Task 7: pushing `main` (`b007913`) triggered production deployment `lightchat-5hrzznvhd-…`. In the build: 140/140 tests passed, then "No migrations to apply". It's aliased to `lightchat-five.vercel.app`. The live smoke test passed 28/28 (1 paid reply), adding test user `smoke03687f40` to production.
 - Build time grew by about 1.5–2 minutes because of the test gate (96 s on the production build machine).
 - Paid proxy calls: 2 short replies, as planned.
+- Accepted by the Gardener on 2026-09-29 ("ok it works"). The wiki was already updated in `b007913`; this sync marks the journal entry done.
