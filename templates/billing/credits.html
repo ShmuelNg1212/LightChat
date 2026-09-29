@@ -19,6 +19,22 @@
   <p class="muted small" id="topup-help">Demo top-ups are free and stop at {{ topup_max|credits:2 }} available credits.</p>
 </form>
 
+<h2>Models and prices</h2>
+<p class="muted small">You pay for tokens read (your conversation) and written (the reply). Before each reply, the most it could cost is held from your balance. Afterwards you're charged the actual amount and the rest is released.</p>
+<div class="table-scroll">
+<table class="data">
+  <thead><tr><th>Model</th><th class="num">Input, per 1M tokens</th><th class="num">Output, per 1M tokens</th><th class="num">Longest reply</th></tr></thead>
+  <tbody>
+  {% for o in offerings %}
+    <tr><td>{{ o.display_name }}</td><td class="num">{{ o.input_rate|credits:2 }}</td><td class="num">{{ o.output_rate|credits:2 }}</td><td class="num">{{ o.max_output_tokens }} tokens</td></tr>
+  {% empty %}
+    <tr><td colspan="4" class="muted">No models are available right now.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<p class="muted small">All models are answered by DeepSeek Flash through different provider interfaces.</p>
+
 <h2>History</h2>
 {% if page.object_list %}
 <div class="table-scroll">

@@ -4,6 +4,8 @@ from django.core.paginator import Paginator
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 
+from catalog.models import ModelOffering
+
 from . import services
 from .money import format_credits
 
@@ -17,6 +19,7 @@ def credits_page(request):
         {
             "wallet": wallet,
             "page": page,
+            "offerings": ModelOffering.available(),
             "topup_amount": settings.TOPUP_AMOUNT_MICRO,
             "topup_max": settings.TOPUP_MAX_AVAILABLE_MICRO,
             "can_topup": wallet.available + settings.TOPUP_AMOUNT_MICRO <= settings.TOPUP_MAX_AVAILABLE_MICRO,

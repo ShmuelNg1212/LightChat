@@ -1,9 +1,30 @@
-{% load chat_tags %}{% if m.role == "user" %}
+{% load chat_tags credits %}{% if m.role == "user" %}
 <div class="msg msg-user" data-message="{{ m.pk }}"><div class="bubble">{{ m.content }}</div></div>
 {% else %}
 {% with gen=g|default:m.generation %}
 <article class="msg msg-assistant" data-message="{{ m.pk }}"{% if gen %} data-status="{{ gen.status }}"{% endif %}>
-  <div class="content">{{ m.content|markdown }}</div>
+  {% if m.content %}<div class="content">{{ m.content|markdown }}</div>{% endif %}
+  {% if gen %}
+  <div class="msg-meta">
+    <span class="model">{{ gen.model_label }}</span>
+    {% if gen.status == "completed" %}
+      <span class="num">{{ gen.input_tokens }} in · {{ gen.output_tokens }} out tokens</span>
+      <span class="num" title="Charged at {{ gen.input_rate|credits:2 }} / {{ gen.output_rate|credits:2 }} credits per 1M input / output tokens">{{ gen.charged|credits }} credits</span>
+      <span class="tag">Charged</span>
+    {% elif gen.status == "reconciled" %}
+      <span class="num">{{ gen.charged|credits }} credits</span>
+      <span class="tag">Reviewed</span>
+    {% elif gen.status == "failed" %}
+      <span class="tag">Not charged</span>
+    {% elif gen.status == "needs_reconciliation" %}
+      <span class="num">Up to {{ gen.reserved|credits }} credits held</span>
+      <span class="tag tag-held">Under review</span>
+    {% else %}
+      <span class="num">Up to {{ gen.reserved|credits }} credits held</span>
+      <span class="tag tag-held">In progress</span>
+    {% endif %}
+  </div>
+  {% endif %}
 </article>
 {% endwith %}
 {% endif %}

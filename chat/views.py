@@ -125,6 +125,7 @@ def send(request):
                 "title": convo.display_title,
                 "created": started.created_conversation,
                 "user_message": generation.user_message_id,
+                "reserved": format_credits(generation.reserved),
                 "available": format_credits(get_wallet(request.user).available, 2),
             }
         )

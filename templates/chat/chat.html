@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static credits %}
 {% block title %}{% if current %}{{ current.display_title }}{% else %}New chat{% endif %}{% endblock %}
 {% block body_class %}chat-body{% endblock %}
 {% block main_class %}chat-shell{% endblock %}
@@ -82,14 +82,16 @@
           <label for="model" class="visually-hidden">Model</label>
           <select id="model" name="model">
             {% for o in offerings %}
-              <option value="{{ o.slug }}"{% if o.pk == selected_offering %} selected{% endif %}>{{ o.display_name }}</option>
+              <option value="{{ o.slug }}" data-price="In {{ o.input_rate|credits:2 }} · Out {{ o.output_rate|credits:2 }} credits per 1M tokens"{% if o.pk == selected_offering %} selected{% endif %}>{{ o.display_name }}</option>
             {% endfor %}
           </select>
+          <span class="price" id="model-price"></span>
           <span class="spacer"></span>
           <button type="button" class="button button-small" id="stop" hidden>Stop</button>
           <button type="submit" class="button button-primary button-small" id="send">Send</button>
         </div>
       </div>
+      <p class="composer-note">All models here are answered by DeepSeek Flash through different provider interfaces, so replies won't match the named providers. Prices are in demo credits, not real money.</p>
     </form>
     {% else %}
     <p class="notice">No models are available right now. The service administrator needs to configure a model key.</p>

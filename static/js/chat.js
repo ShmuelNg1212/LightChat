@@ -42,6 +42,11 @@
   const nearBottom = () => scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < 80;
   const scrollToBottom = () => { scroller.scrollTop = scroller.scrollHeight; };
 
+  const price = document.getElementById("model-price");
+  const showPrice = () => { price.textContent = modelSelect.selectedOptions[0].dataset.price || ""; };
+  modelSelect.addEventListener("change", showPrice);
+  showPrice();
+
   function autosize() {
     textarea.style.height = "auto";
     textarea.style.height = Math.min(textarea.scrollHeight, window.innerHeight * 0.4) + "px";
@@ -103,8 +108,10 @@
     typing.setAttribute("aria-hidden", "true");
     typing.append(el("span"), el("span"), el("span"));
     content.appendChild(typing);
-    article.appendChild(content);
-    return { article, content, typing };
+    const meta = el("div", "msg-meta");
+    meta.appendChild(el("span", "model", modelSelect.selectedOptions[0].textContent));
+    article.append(content, meta);
+    return { article, content, typing, meta };
   }
 
   function showRejection(article, message, url) {
@@ -194,6 +201,7 @@
       if (event.type === "start") {
         adoptConversation(event);
         if (userBubble && event.user_message) userBubble.dataset.message = event.user_message;
+        reply.meta.append(el("span", "num", "Up to " + event.reserved + " credits held"), el("span", "tag tag-held", "Estimate"));
         setBalance(event.available);
       } else if (event.type === "delta") {
         const follow = nearBottom();
