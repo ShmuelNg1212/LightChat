@@ -1,6 +1,6 @@
 # Setup
 
-How to install, configure and run Litechat locally.
+How to install, configure and run LightChat locally. (The repository folder is still named `litechat_midterm`.)
 
 ## Requirements
 
@@ -55,6 +55,16 @@ Create an admin account (needed to review held credit at `/admin/`):
 ```
 
 115 tests. They never call the real proxy: an `httpx.MockTransport` replaces the network, and real captured responses in `doc/fixtures/proxy/` are replayed. SQLite tests use a file-backed test database (`test_db.sqlite3`, gitignored) so locking behaves as in development.
+
+## Design checks
+
+| Command | What it checks |
+|---|---|
+| `python3 doc/design/check_contrast.py` | Every color token pair in `static/css/app.css` meets WCAG 2.2 AA in light and dark (exit 1 on failure) |
+| `…/impeccable detect --json <files>` | Impeccable's anti-pattern detector (runs automatically as a hook when editing UI through Claude Code) |
+| `python doc/design/brand/generate_logo.py <BarlowSemiCondensed-SemiBold.ttf> static/brand` | Rebuilds the logo SVGs (needs `fonttools`) |
+
+Fonts are self-hosted from `static/fonts/` (sources and licences in its README). No third-party requests are made for fonts or icons.
 
 ## Operational commands
 

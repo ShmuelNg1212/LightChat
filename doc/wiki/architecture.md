@@ -75,9 +75,25 @@ Generations in `needs_reconciliation` keep their hold. In `/admin/` → Generati
 
 `services.history_for()` sends each earlier prompt only if its reply **completed**, together with that reply. Failed or interrupted exchanges are left out. Adapters merge neighboring messages with the same role, so roles alternate. History is plain text, so switching models mid-chat works on any interface.
 
+## Front end
+
+- **Templates:** `templates/base.html` holds the shell (skip link, header lockup, credit readout, account). `templates/chat/` has the rail, conversation, reading lines (`_message.html`, also used to render the final streamed reply) and the composer dock. `templates/partials/` has the icon sprite (`icons.html`), the brand mark and form fields.
+- **One stylesheet:** `static/css/app.css`. Tokens come first (light, then dark via `prefers-color-scheme`), then components. The system is documented in [DESIGN.md](../../DESIGN.md).
+- **One script:** `static/js/chat.js`, vanilla JS with no build step. It handles:
+  - the drawer;
+  - the composer (Enter/Shift+Enter, request IDs);
+  - reading the NDJSON stream;
+  - the readout (held and charged figures, and the count-down settle);
+  - the minimum-hold check that disables Send;
+  - Stop and Retry.
+
+  Stream `start`/`end` events carry `available`, `held` and (on `end`) `charged`, pre-formatted by the server.
+- **Assets:** `static/brand/` holds the logo, favicon, icons and web manifest; `static/fonts/` holds the self-hosted WOFF2 files.
+- **Minimum hold** shown in the composer: computed per model in `chat.views.sidebar_context` with the same `reservation_for` function billing uses, for a one-line prompt in a new chat.
+
 ## Rendering and security
 
 - Replies are rendered with `markdown-it-py` (CommonMark plus tables and strikethrough, raw HTML **off**), then sanitized by `nh3`, which allows a fixed tag list and http/https/mailto links with `rel="noopener noreferrer nofollow"`. While streaming, text is shown as plain `textContent`.
 - Every conversation lookup goes through `chat.views.owned()` / `owner=request.user`, so another user's chat returns 404.
 - Keys live only in settings and the proxy client. A test checks that they never appear in any page or stream.
-- The `litechat.*` loggers record IDs, statuses and amounts, never prompts, replies or headers. The admin shows conversation metadata only.
+- The `litechat.*` loggers (internal name, kept through the rebrand) record IDs, statuses and amounts, never prompts, replies or headers. The admin shows conversation metadata only.

@@ -3,7 +3,7 @@
 - **Date:** 2026-09-29 14:06
 - **Study:** [../study/2026-09-29-1357-lightchat-rebrand.md](../study/2026-09-29-1357-lightchat-rebrand.md)
 - **Design brief:** [../design/2026-09-29-1357-lightchat-identity-brief.md](../design/2026-09-29-1357-lightchat-identity-brief.md)
-- **Status:** awaiting-rendezvous
+- **Status:** done
 
 > **Approved 2026-09-29.** The Gardener replied "approved" to the study, brief and plan.
 
@@ -57,6 +57,17 @@ Code-led. Nothing below starts before approval. Every task leaves the app workin
 
 ### After acceptance (Sync)
 - Generate **DESIGN.md** (and `.impeccable/design.json`) from the built system with Impeccable's documenter. Update the wiki: rename the README title and current-state text to LightChat, add a visual-system section and logo usage links, and note the kept internal names (`litechat.*` loggers, repo folder, proxy domain). → `docs(design): record the LightChat visual system in DESIGN.md`, `docs(wiki): sync after lightchat-rebrand`
+
+## Outcome
+
+Accepted by the Gardener on 2026-09-29 ("ok move on to the final steps"). At Sync, Impeccable's documenter wrote [DESIGN.md](../../DESIGN.md) and `.impeccable/design.json` from the built system, and the wiki was updated in `docs(wiki): sync after lightchat-rebrand`.
+
+**Drift the documenter found. Reported to the Gardener, not fixed during Sync:**
+1. The "Demo top-ups stop at…" flash message is amber (`.flash-warning`), which breaks "amber means credit in motion only".
+2. The delete confirmation's button is the ink primary instead of the danger style.
+3. Dead CSS: the unused alias tokens block, a duplicated `.content.streaming` rule, and conflicting `overflow-wrap` values.
+4. A stale reason text on the `.impeccable/config.json` blockquote ignore (the rule is now 1px).
+5. Build vs. brief micro-differences (label tracking 0.06em, answer headings weight 650, code 0.86em). DESIGN.md records the build.
 
 ## Execution notes
 
