@@ -55,9 +55,13 @@ Captured with `python manage.py probe_proxy --bad-key`. Redacted transcripts are
 - A bad key returns HTTP 401 with JSON `{"error": {"code": "Unauthorized", "message": "invalid or inactive provider key", "type": "authentication_error"}}`.
 - Every response carries an `x-request-id` header.
 
+### Output-token limit (verified 2026-09-29)
+
+All three interfaces accept an output limit of **25,000 tokens** (`max_tokens` / `max_output_tokens` / `maxOutputTokens`), verified with `probe_proxy --no-save --max-tokens 25000`. Each returned HTTP 200 and a normal completion. The proxy's documented maximum is still unknown. Whether it actually *generates* that many tokens in one reply is checked separately (see the reply-limit plan).
+
 ### Connectivity (observed 2026-09-29)
 
-`proxy.litechat.ai` has only an IPv4 address (`145.239.154.51`). From the development machine, about half of all TCP connection attempts time out before connecting. The client therefore retries *connection attempts only* (httpx transport `retries=3`, 5 s connect timeout). A request that was sent is never retried.
+`proxy.litechat.ai` has only an IPv4 address (`145.239.154.51`). From the development machine, about half of all TCP connection attempts time out before connecting, and occasionally four attempts in a row fail (seen twice in about ten runs on 2026-09-29), which surfaces to users as "Could not reach the model service" (not charged). The client therefore retries *connection attempts only* (httpx transport `retries=3`, 5 s connect timeout). A request that was sent is never retried.
 
 ### Errors and reliability (documented)
 
