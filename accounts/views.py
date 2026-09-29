@@ -23,6 +23,3 @@ def signup(request):
         form = SignUpForm()
     return render(request, "accounts/signup.html", {"form": form})
 
-
-def home(request):
-    return render(request, "home.html")

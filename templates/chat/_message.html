@@ -1,0 +1,7 @@
+{% if m.role == "user" %}
+<div class="msg msg-user"><div class="bubble">{{ m.content }}</div></div>
+{% else %}
+<article class="msg msg-assistant">
+  <div class="content">{{ m.content|linebreaks }}</div>
+</article>
+{% endif %}

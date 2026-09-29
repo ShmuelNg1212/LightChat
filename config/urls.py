@@ -3,8 +3,6 @@ from django.contrib.auth.decorators import login_not_required
 from django.http import HttpResponse
 from django.urls import include, path
 
-from accounts.views import home
-
 
 @login_not_required
 def healthz(request):
@@ -16,5 +14,5 @@ urlpatterns = [
     path("healthz", healthz, name="healthz"),
     path("accounts/", include("accounts.urls")),
     path("credits/", include("billing.urls")),
-    path("", home, name="home"),
+    path("", include("chat.urls")),
 ]

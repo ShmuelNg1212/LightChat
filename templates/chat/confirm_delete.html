@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Delete chat{% endblock %}
+{% block main_class %}page page-narrow{% endblock %}
+{% block content %}
+<section class="card">
+  <h1>Delete this chat?</h1>
+  <p><strong>{{ convo.display_title }}</strong> and all its messages will be permanently deleted. Your credit history is kept.</p>
+  <form method="post" class="inline-form">
+    {% csrf_token %}
+    <button type="submit" class="button button-primary">Delete chat</button>
+    <a class="button" href="{% url 'conversation' convo.pk %}">Cancel</a>
+  </form>
+</section>
+{% endblock %}
