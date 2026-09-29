@@ -26,7 +26,7 @@
   <thead><tr><th>Model</th><th class="num">Input <span class="nowrap">/ 1M</span></th><th class="num">Output <span class="nowrap">/ 1M</span></th><th class="num">Max reply</th></tr></thead>
   <tbody>
   {% for o in offerings %}
-    <tr><td>{{ o.display_name }}</td><td class="num">{{ o.input_rate|credits:2 }}</td><td class="num">{{ o.output_rate|credits:2 }}</td><td class="num">{{ o.max_output_tokens }} tokens</td></tr>
+    <tr><td>{{ o.display_name }}</td><td class="num">{{ o.input_rate|credits:2 }}</td><td class="num">{{ o.output_rate|credits:2 }}</td><td class="num">{{ o.max_output_tokens|floatformat:"0g" }} tokens</td></tr>
   {% empty %}
     <tr><td colspan="4" class="muted">No models are available right now.</td></tr>
   {% endfor %}

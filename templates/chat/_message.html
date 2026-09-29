@@ -25,7 +25,7 @@
     {% endif %}
   </div>
   {% if gen.finish_reason == "length" %}
-    <div class="msg-warn">This reply hit the {{ gen.max_output_tokens }}-token limit and was cut off. Ask it to continue.</div>
+    <div class="msg-warn">This reply hit the {{ gen.max_output_tokens|floatformat:"0g" }}-token limit and was cut off. Ask it to continue.</div>
   {% elif gen.finish_reason == "filtered" %}
     <div class="msg-warn">The model's safety filter stopped this reply.</div>
   {% endif %}

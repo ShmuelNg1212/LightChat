@@ -23,3 +23,14 @@ class CatalogTests(TestCase):
     def test_display_name_names_the_interface(self):
         offering = ModelOffering.objects.get(provider="anthropic")
         self.assertEqual(offering.display_name, "Claude Haiku 4.5 · Anthropic interface")
+
+
+class ReplyLimitTests(TestCase):
+    def test_all_models_allow_25000_output_tokens(self):
+        self.assertEqual(set(ModelOffering.objects.values_list("max_output_tokens", flat=True)), {25_000})
+
+    def test_reply_writing_is_capped_at_half_a_credit(self):
+        from billing.money import cost_for_tokens
+
+        for offering in ModelOffering.objects.all():
+            self.assertEqual(cost_for_tokens(offering.max_output_tokens, offering.output_rate), 500_000)

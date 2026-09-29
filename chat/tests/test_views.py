@@ -168,3 +168,23 @@ class MessageDisplayTests(TestCase):
         self.assertIn("Rename", events[0]["header_html"])
         second = self.send(openai_reply("Again"), conversation=events[0]["conversation"])
         self.assertEqual(second[0]["header_html"], "")
+
+
+@keys
+class ReplyLimitDisplayTests(TestCase):
+    def setUp(self):
+        self.client.force_login(make_user(credit=5_000_000))
+
+    def test_hold_covers_half_a_credit_of_writing(self):
+        payload = {"prompt": "Hi", "model": "gpt-5-6-luna", "request_id": rid()}
+        with FakeProxy(openai_reply("Hi")):
+            response = self.client.post(reverse("send"), json.dumps(payload), content_type="application/json")
+            start = read_events(response)[0]
+        self.assertGreaterEqual(float(start["reserved"]), 0.5)
+
+    def test_limit_shown_with_separator(self):
+        self.assertContains(self.client.get(reverse("credits")), "25,000 tokens")
+        payload = {"prompt": "Hi", "model": "gpt-5-6-luna", "request_id": rid()}
+        with FakeProxy(openai_reply("Long", finish="length")):
+            end = read_events(self.client.post(reverse("send"), json.dumps(payload), content_type="application/json"))[-1]
+        self.assertIn("25,000-token limit", end["html"])
