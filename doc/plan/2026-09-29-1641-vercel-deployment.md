@@ -1,7 +1,7 @@
 # Plan: Deploy LightChat to Vercel
 - **Date:** 2026-09-29 16:41
 - **Study:** [../study/2026-09-29-1641-vercel-deployment.md](../study/2026-09-29-1641-vercel-deployment.md)
-- **Status:** awaiting-sync
+- **Status:** done
 
 The Gardener asked for the Study and Plan together, so both are approved in one step.
 
@@ -59,7 +59,7 @@ The Gardener asked for the Study and Plan together, so both are approved in one 
 - [ ] 16. ⏸ **Gardener:** `createsuperuser` against production (I give you the exact command)
 - [x] 17. Production smoke test: health, sign-up, one short reply (1 paid call), persistence
 - [x] 18. Set plan `Status: awaiting-rendezvous`. ⏸ **Rendezvous 2:** the live URL
-- [ ] 19. Sync:
+- [x] 19. Sync:
   - add `doc/wiki/deployment.md` (setup, env vars, deploying, migrations, rollback, reconciliation, limits);
   - update setup, architecture, external-dependencies and README.
 
@@ -91,10 +91,11 @@ The Gardener asked for the Study and Plan together, so both are approved in one 
 - The CLI's permission classifier blocked the bootstrap `vercel deploy --prod`. The Gardener has to run it or allow it.
 - Task 9 (Gardener): Neon Free was connected to Production and Preview, and the automation bypass secret was turned on.
 - Task 15 was run by the Gardener: the bootstrap `vercel deploy --prod` built `ce1e0fe`. The preview (`lightchat-dyd1wc615-…`) was built from the **same commit**, so after the preview passed, going live only needed Deployment Protection restored to Standard (`all_except_custom_domains`), with no second production build. `https://lightchat-five.vercel.app` is now public, and preview and deployment URLs still need a Vercel login.
-- **Neon preview branching did not happen for CLI deploys.** The preview deployment got no branch-specific `DATABASE_URL`, so **preview and production share one database.** The preview build reported "No migrations to apply". Test data now in production: the users `smoke7bceb75b` (one Stop-test reply left `needs_reconciliation`, with its hold kept), `smoke0f61ad88`, and one `mobile…` account from the phone check. Every other user is a real sign-up.
+- **Neon preview branching did not happen for CLI deploys.** The preview deployment got no branch-specific `DATABASE_URL`, so **preview and production share one database.** The preview build reported "No migrations to apply". Test data now in production: the users `smoke7bceb75b` (one Stop-test reply left `needs_reconciliation`, with its hold kept), `smoke0f61ad88`, and one `mobile…` account from the phone check.
 - Preview results: smoke test **36/36**, phone checks **17/17**. The three models, the charges and ledger, the double-send check, Stop, saved chats, secure cookies, HSTS, the HTTP→HTTPS redirect, static files from the CDN, secret files not served, and no key in any response.
   - Streaming: 2,401 deltas over 16.9 s for a ~2,000-word reply. First byte in about 0.3 s, first token in about 1 s.
   - The long reply finished in 17.9 s, so streaming past 20 s wasn't observed. Incremental delivery is proven, and the 300 s limit is untested in practice.
 - Production results: **28/28** (one paid reply).
 - Paid proxy calls: 7 (5 short, 1 stopped, 1 long, about 3,000 output tokens) plus 2 short on production.
 - Task 16 is still open: the Gardener runs `createsuperuser` against production (steps in `doc/wiki/deployment.md`).
+- Sync done. The only open item is task 16 (the Gardener's `createsuperuser`), which is a Gardener action, not code.
