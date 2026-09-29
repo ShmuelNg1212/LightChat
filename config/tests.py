@@ -73,7 +73,7 @@ class DeploymentSettingsTests(SimpleTestCase):
         from django.conf import settings
 
         environ = {
-            **os.environ,
+            **{k: v for k, v in os.environ.items() if k != "HTTPS_ONLY"},
             "DEBUG": "False",
             "VERCEL": "1",
             "VERCEL_URL": "lightchat-abc123.vercel.app",
