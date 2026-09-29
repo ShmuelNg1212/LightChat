@@ -1,7 +1,7 @@
 # Plan: Deploy LightChat to Vercel
 - **Date:** 2026-09-29 16:41
 - **Study:** [../study/2026-09-29-1641-vercel-deployment.md](../study/2026-09-29-1641-vercel-deployment.md)
-- **Status:** in-progress
+- **Status:** blocked
 
 The Gardener asked for the Study and Plan together, so both are approved in one step.
 
@@ -29,9 +29,9 @@ The Gardener asked for the Study and Plan together, so both are approved in one 
 - [x] 7. Update `.env.example` with `DB_CONN_MAX_AGE`, `REPLY_MAX_SECONDS`, `REPLY_CHUNK_TIMEOUT_SECONDS`, `HTTPS_ONLY` and the Neon variables → `docs(env): document deployment variables`
 
 ### B. Preview (needs the Gardener's logins and clicks)
-- [ ] 8. Create and link the Vercel project with `npx vercel@latest link`. No deploy yet, no Git auto-deploys
+- [x] 8. Create and link the Vercel project with `npx vercel@latest link`. No deploy yet, no Git auto-deploys
 - [ ] 9. ⏸ **Gardener:** add Neon (Free, Frankfurt, Production and Preview, Preview branching on) and turn on the automation bypass secret
-- [ ] 10. Set the env vars for Production and Preview:
+- [x] 10. Set the env vars for Production and Preview:
   - `SECRET_KEY`: random, different per environment;
   - the three proxy keys, piped from `.env`;
   - `REPLY_MAX_SECONDS=260`;
@@ -69,7 +69,7 @@ The Gardener asked for the Study and Plan together, so both are approved in one 
 
 ## Blocked On
 - Approval of the Study and this Plan, and your answers on **plan (Hobby)** and **region (Frankfurt)**.
-- Task 8: your `npx vercel@latest login`.
+- ~~Task 8: your `npx vercel@latest login`.~~ Already logged in.
 - Task 9: Neon setup and the bypass secret (dashboard).
 - Task 16: your `createsuperuser` run.
 
@@ -77,3 +77,5 @@ The Gardener asked for the Study and Plan together, so both are approved in one 
 - Task 3: the full suite (135 tests at the time) passed on local PostgreSQL 17 with no changes needed.
 - Task 4: the reply cap on Vercel is **260 s** instead of the Study's ~270 s. The worst case is the cap plus one 25 s wait between chunks, which is 285 s, safely under the 300 s function limit.
 - Task 6 also added a guard (`271c9d0`): on Vercel the app refuses to start without `DATABASE_URL`, so it can never quietly run on a throwaway SQLite file.
+- Task 8: created a new project, `lightchat`, under `shmuelng8310-5097s-projects` (Hobby). The existing `digitalcafe` project was not touched. The CLI created it with the generic preset, so `vercel.json` now pins `"framework": "django"` (`885b80f`). The CLI's own `.gitignore` edit was reverted, because the existing rules already cover `.vercel/` and `.env.local`.
+- Task 10 was done before task 9, because it doesn't depend on Neon. Production and Preview each hold `SECRET_KEY` (random, different per environment, sensitive), the three `BUILD_*` keys (sensitive, piped from `.env`), `REPLY_MAX_SECONDS=260`, `REPLY_CHUNK_TIMEOUT_SECONDS=25` and `DB_CONN_MAX_AGE=0`.
