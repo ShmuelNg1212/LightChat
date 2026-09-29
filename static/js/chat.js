@@ -88,9 +88,15 @@
     textarea.setAttribute("aria-busy", String(value));
   }
 
-  function setBalance(text) {
-    const node = document.getElementById("balance-available");
-    if (node && text) node.textContent = text;
+  function setBalance(event) {
+    const available = document.getElementById("balance-available");
+    const held = document.getElementById("balance-held");
+    const heldValue = document.getElementById("balance-held-value");
+    if (available && event.available) available.textContent = event.available;
+    if (held && heldValue) {
+      held.hidden = !event.held;
+      if (event.held) heldValue.textContent = event.held;
+    }
   }
 
   function adoptConversation(start) {
@@ -219,7 +225,7 @@
         stopButton.hidden = false;
         if (userBubble && event.user_message) userBubble.dataset.message = event.user_message;
         reply.meta.append(el("span", "num", "Up to " + event.reserved + " credits held"), el("span", "tag tag-held", "Estimate"));
-        setBalance(event.available);
+        setBalance(event);
       } else if (event.type === "delta") {
         const follow = nearBottom();
         if (reply.typing.isConnected) reply.typing.remove();
@@ -231,7 +237,7 @@
         const follow = nearBottom();
         const finished = fromHTML(event.html);
         reply.article.replaceWith(finished);
-        setBalance(event.available);
+        setBalance(event);
         if (follow) scrollToBottom();
         announce(event.status === "completed" ? "Reply finished." : "Reply did not finish.");
       }

@@ -188,3 +188,23 @@ class ReplyLimitDisplayTests(TestCase):
         with FakeProxy(openai_reply("Long", finish="length")):
             end = read_events(self.client.post(reverse("send"), json.dumps(payload), content_type="application/json"))[-1]
         self.assertIn("25,000-token limit", end["html"])
+
+
+@keys
+class ReadoutTests(TestCase):
+    def test_events_report_held_credit_while_running_and_none_after(self):
+        self.client.force_login(make_user())
+        payload = {"prompt": "Hi", "model": "gpt-5-6-luna", "request_id": rid()}
+        with FakeProxy(openai_reply("Hi")):
+            events = read_events(self.client.post(reverse("send"), json.dumps(payload), content_type="application/json"))
+        self.assertRegex(events[0]["held"], r"^0\.\d{4}$")
+        self.assertEqual(events[-1]["held"], "")
+
+    def test_header_shows_readout_and_lockup(self):
+        self.client.force_login(make_user())
+        html = self.client.get(reverse("home")).content.decode()
+        self.assertIn('class="readout"', html)
+        self.assertIn(">Available<", html)
+        self.assertIn('class="brand-mark"', html)
+        self.assertIn('<span class="brand-name">LightChat</span>', html)
+        self.assertIn('id="balance-held" hidden', html)

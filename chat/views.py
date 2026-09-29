@@ -80,6 +80,11 @@ REJECTION_STATUS = {
 }
 
 
+def _balance(user) -> dict:
+    wallet = get_wallet(user)
+    return {"available": format_credits(wallet.available), "held": format_credits(wallet.held) if wallet.held else ""}
+
+
 def _ndjson(event: dict) -> bytes:
     return (json.dumps(event, separators=(",", ":")) + "\n").encode()
 
@@ -128,7 +133,7 @@ def send(request):
                 "created": started.created_conversation,
                 "user_message": generation.user_message_id,
                 "reserved": format_credits(generation.reserved),
-                "available": format_credits(get_wallet(request.user).available),
+                **_balance(request.user),
                 "header_html": render_to_string("chat/_header.html", {"current": convo}, request=request)
                 if started.created_conversation
                 else "",
@@ -147,7 +152,7 @@ def send(request):
                             {"m": value.assistant_message, "g": value, "latest_user_id": value.user_message_id},
                             request=request,
                         ),
-                        "available": format_credits(get_wallet(request.user).available),
+                        **_balance(request.user),
                     }
                 )
 

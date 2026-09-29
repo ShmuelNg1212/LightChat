@@ -18,14 +18,16 @@
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="topbar">
     {% block topbar_start %}{% endblock %}
-    <a class="brand" href="{% url 'home' %}">LightChat</a>
+    <a class="brand" href="{% url 'home' %}">{% include "partials/brand_mark.html" %}<span class="brand-name">LightChat</span></a>
     {% if user.is_authenticated %}
-      <nav class="topnav" aria-label="Account">
+      <a class="readout" href="{% url 'credits' %}">
+        <span class="readout-label">Available</span>
+        <span class="readout-value"><span id="balance-available">{{ wallet.available|credits }}</span> <span class="readout-unit">credits</span></span>
+        <span class="readout-held" id="balance-held"{% if not wallet.held %} hidden{% endif %}><span class="pulse-light" aria-hidden="true"></span><span id="balance-held-value">{{ wallet.held|credits }}</span> held</span>
+      </a>
+      <nav class="account" aria-label="Account">
         {% block topnav_extra %}{% endblock %}
-        <a class="balance-pill" href="{% url 'credits' %}" title="Available demo credits">
-          <strong id="balance-available">{{ wallet.available|credits }}</strong><span class="unit">credits</span>
-        </a>
-        <span class="muted hide-sm" title="Signed in">{{ user.username }}</span>
+        <span class="account-name" title="Signed in as {{ user.username }}">{{ user.username }}</span>
         <form method="post" action="{% url 'logout' %}">
           {% csrf_token %}
           <button type="submit" class="link-button">Sign out</button>

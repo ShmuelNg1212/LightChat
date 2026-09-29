@@ -6,24 +6,25 @@
 
 {% block topbar_start %}
 <button type="button" class="icon-button sidebar-toggle" aria-controls="sidebar" aria-expanded="false" data-sidebar-toggle>
-  <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-  <span class="visually-hidden">Show chats</span>
+  <svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg>
+  <span class="visually-hidden">Chats</span>
 </button>
 {% endblock %}
 
 {% block content %}
 <aside class="sidebar" id="sidebar" aria-label="Chats">
   <div class="sidebar-head">
-    <a class="button button-primary" href="{% url 'home' %}">+ New chat</a>
+    <a class="button" href="{% url 'home' %}"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>New chat</a>
   </div>
+  <h2 class="sidebar-title" id="chats-heading">Chats</h2>
   {% if conversations %}
-    <ul class="convo-list" id="convo-list">
+    <ul class="convo-list" id="convo-list" aria-labelledby="chats-heading">
       {% for c in conversations %}
         <li><a href="{% url 'conversation' c.pk %}"{% if current and c.pk == current.pk %} aria-current="page"{% endif %}>{{ c.display_title }}</a></li>
       {% endfor %}
     </ul>
   {% else %}
-    <ul class="convo-list" id="convo-list"></ul>
+    <ul class="convo-list" id="convo-list" aria-labelledby="chats-heading"></ul>
     <p class="sidebar-empty" id="sidebar-empty">Your chats will appear here.</p>
   {% endif %}
   <div class="sidebar-foot">
