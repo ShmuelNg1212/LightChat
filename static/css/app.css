@@ -385,15 +385,15 @@ body.chat-body { overflow: hidden; }
 .reading-model { color: var(--ink); font-weight: 600; }
 .reading strong { color: var(--ink); font-weight: 600; }
 .reading-state.is-held, .reading-state.is-held strong { color: var(--pulse); }
-.reading-state { display: inline-flex; align-items: center; gap: 6px; }
+.reading-state .pulse-light { margin-right: 6px; vertical-align: 0.05em; }
 .reading-note {
   margin: var(--space-2) 0 0; font-size: 0.9375rem; line-height: 1.5; color: var(--ink); max-width: var(--measure);
 }
 .reading-note.is-danger > strong:first-child { color: var(--danger); }
-.reading-note .link-button { margin-left: var(--space-1); font-weight: 600; }
+.reading-note .link-button { font-weight: 600; white-space: nowrap; }
 
 /* Rendered answers: Public Sans 17/1.65, headings that step down gently */
-.msg-assistant .content { line-height: 1.65; overflow-wrap: break-word; hyphens: auto; }
+.msg-assistant .content { line-height: 1.65; overflow-wrap: break-word; }
 .content > :first-child { margin-top: 0; }
 .content > :last-child { margin-bottom: 0; }
 .content p, .content ul, .content ol, .content pre, .content blockquote, .content table { margin: 0 0 0.9em; }
@@ -463,7 +463,7 @@ body.chat-body { overflow: hidden; }
 
 @media (max-width: 800px) {
   .topbar { gap: var(--space-2); padding: 0 var(--space-2); }
-  .brand-name { display: none; }
+  .chat-body .brand-name { display: none; }
   .readout { gap: var(--space-2); padding: 0 var(--space-2); }
   .readout-label, .readout-unit { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .readout-held { padding-left: var(--space-2); }
@@ -484,6 +484,8 @@ body.chat-body { overflow: hidden; }
   .messages { padding: var(--space-4) var(--space-3) var(--space-6); }
   .messages-inner, .composer { font-size: 16px; }
   .msg-user .prompt { max-width: 92%; }
+  .reading-model { flex-basis: 100%; padding-bottom: 2px; }
+  .reading-model + * { border-left: 0; padding-left: 0; }
 
   .composer-wrap { padding: var(--space-2) var(--space-3) var(--space-3); }
   .tariff { flex: 1 1 100%; margin-right: 0; }

@@ -236,3 +236,27 @@ class FirstRunTests(TestCase):
             html = self.client.get(reverse("home")).content.decode()
         self.assertIn("No models are available right now,", html)
         self.assertNotIn('id="composer"', html)
+
+
+@keys
+class HardeningTests(TestCase):
+    def setUp(self):
+        self.user = make_user(credit=5_000_000)
+        self.client.force_login(self.user)
+
+    def test_reply_still_in_progress_explains_itself_on_reload(self):
+        from chat import services
+
+        g = services.start(self.user, prompt="Hi", offering_slug="gpt-5-6-luna", client_request_id=rid()).generation
+        page = self.client.get(reverse("conversation", args=[g.conversation_id]))
+        self.assertContains(page, "Holding up to")
+        self.assertContains(page, "still being written")
+
+    def test_very_long_content_is_escaped_and_kept(self):
+        long_prompt = "https://example.com/" + "a" * 3000
+        payload = {"prompt": long_prompt, "model": "gpt-5-6-luna", "request_id": rid()}
+        with FakeProxy(openai_reply("x" * 5000 + " <script>alert(1)</script>")):
+            events = read_events(self.client.post(reverse("send"), json.dumps(payload), content_type="application/json"))
+        self.assertNotIn("<script>", events[-1]["html"])
+        page = self.client.get(reverse("conversation", args=[events[0]["conversation"]]))
+        self.assertContains(page, "a" * 3000)

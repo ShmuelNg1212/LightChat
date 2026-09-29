@@ -38,6 +38,8 @@
       The model service may have charged for part of it, so that credit stays on hold while the cost is checked. Anything unused comes back.
       {% if gen.user_message_id == latest_user_id %}<button type="button" class="link-button" data-retry="{{ gen.user_message_id }}">Retry</button>{% endif %}
     </p>
+  {% elif gen.status == "pending" or gen.status == "streaming" %}
+    <p class="reading-note">This reply is still being written. Refresh the page in a moment to see it.</p>
   {% elif gen.status == "reconciled" and gen.resolution %}
     <p class="reading-note">Review: {{ gen.resolution }}</p>
   {% endif %}
