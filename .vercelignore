@@ -7,7 +7,8 @@
 .venv/
 __pycache__/
 submission/
-doc/
+doc/*
+!doc/fixtures/
 tools/
 .impeccable/
 .claude/
