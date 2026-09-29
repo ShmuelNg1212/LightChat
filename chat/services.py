@@ -17,7 +17,7 @@ from django.db import IntegrityError, transaction
 from django.utils import timezone
 
 from billing import services as billing
-from billing.money import cost_for_tokens
+from billing.money import cost_for_tokens, format_credits
 from catalog.models import ModelOffering
 from proxy.client import stream_reply
 from proxy.types import Cancelled, Done, Message as ProxyMessage, ProxyError, TextDelta
@@ -152,7 +152,8 @@ def start(
             except billing.InsufficientCredit as exc:
                 raise SendRejected(
                     "insufficient_credit",
-                    "Not enough credit for this reply. Add demo credits to continue.",
+                    f"Not enough credit: this reply could cost up to {format_credits(exc.needed)} credits "
+                    f"and you have {format_credits(max(exc.available, 0))}. Add demo credits to continue.",
                     needed=exc.needed,
                     available=exc.available,
                 )

@@ -46,7 +46,11 @@ class SendViewTests(TestCase):
         billing.adjust(self.user, -billing.get_wallet(self.user).balance, memo="drain")
         response = self.post()
         self.assertEqual(response.status_code, 402)
-        self.assertEqual(response.json()["error"]["code"], "insufficient_credit")
+        error = response.json()["error"]
+        self.assertEqual(error["code"], "insufficient_credit")
+        self.assertEqual(error["available"], "0.0000")
+        self.assertRegex(error["needed"], r"^0\.5\d{3}$")
+        self.assertIn(f"could cost up to {error['needed']} credits and you have 0.0000", error["message"])
 
     def test_duplicate_is_409_and_links_the_chat(self):
         request_id = rid()

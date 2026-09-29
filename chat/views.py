@@ -114,6 +114,9 @@ def send(request):
         )
     except services.SendRejected as exc:
         body = {"error": {"code": exc.code, "message": exc.message}}
+        if exc.code == "insufficient_credit":
+            body["error"]["needed"] = format_credits(exc.extra["needed"])
+            body["error"]["available"] = format_credits(max(exc.extra["available"], 0))
         if exc.code == "duplicate" and exc.extra.get("generation") and exc.extra["generation"].conversation_id:
             body["error"]["url"] = reverse("conversation", args=[exc.extra["generation"].conversation_id])
         return JsonResponse(body, status=REJECTION_STATUS.get(exc.code, 400))
