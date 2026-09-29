@@ -160,7 +160,7 @@
     let userBubble = null;
     if (!retry) {
       userBubble = el("div", "msg msg-user");
-      userBubble.appendChild(el("div", "bubble", prompt));
+      userBubble.appendChild(el("div", "prompt", prompt));
       list.appendChild(userBubble);
     }
     const reply = pendingReply();

@@ -1,5 +1,5 @@
 {% load chat_tags credits %}{% if m.role == "user" %}
-<div class="msg msg-user" data-message="{{ m.pk }}"><div class="bubble">{{ m.content }}</div></div>
+<div class="msg msg-user" data-message="{{ m.pk }}"><div class="prompt">{{ m.content }}</div></div>
 {% else %}
 {% with gen=g|default:m.generation %}
 <article class="msg msg-assistant" data-message="{{ m.pk }}"{% if gen %} data-status="{{ gen.status }}"{% endif %}>
