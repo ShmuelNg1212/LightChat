@@ -1,0 +1,17 @@
+# Never upload secrets, local data or local-only tooling to Vercel.
+.env
+.env.*
+!.env.example
+*.sqlite3
+*.sqlite3-*
+.venv/
+__pycache__/
+submission/
+doc/
+tools/
+.impeccable/
+.claude/
+.vscode/
+.idea/
+.DS_Store
+staticfiles/

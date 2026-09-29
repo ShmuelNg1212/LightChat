@@ -34,3 +34,6 @@ htmlcov/
 
 # Assessment submission package (local only; never committed)
 /submission/
+
+# Vercel CLI project link (local)
+.vercel/
