@@ -1,12 +1,12 @@
 # Architecture
 
-One Django 6.1 project using server-rendered templates, with one small vanilla-JavaScript file for streaming. SQLite runs locally, and PostgreSQL can be used through `DATABASE_URL`.
+One Django 6.1 project using server-rendered templates, with one small vanilla-JavaScript file for streaming. SQLite runs locally. PostgreSQL (Neon) runs in production on Vercel through `DATABASE_URL`; see [deployment.md](deployment.md).
 
 ## Apps
 
 | App | Responsibility | Key files |
 |---|---|---|
-| `config` | Settings (from `.env`), root URLs, health check `/healthz` | `settings.py`, `urls.py` |
+| `config` | Settings (from `.env` or Vercel env vars), root URLs, health check `/healthz`. `deploy.py` holds the environment-dependent pieces: database options per engine, Vercel host names | `settings.py`, `deploy.py`, `urls.py` |
 | `accounts` | Custom `User` (AbstractUser), sign-up/login/logout. `LoginRequiredMiddleware` protects every page by default | `models.py`, `views.py`, `forms.py` |
 | `billing` | Wallets, append-only ledger, demo top-ups, Credits page | `models.py`, `services.py`, `money.py` |
 | `catalog` | `ModelOffering`: the selectable models and their demo rates | `models.py`, `migrations/0002_seed_proxy_models.py` |
@@ -49,7 +49,7 @@ browser ──POST /send/ (JSON, CSRF header)──▶ chat.views.send
    4. {"type":"end"} carries the server-rendered message HTML and the new balance
 ```
 
-The response is NDJSON over `StreamingHttpResponse` from a **sync (WSGI) view**. Each active stream holds one server thread, which is acceptable at this scale.
+The response is NDJSON over `StreamingHttpResponse` from a **sync (WSGI) view**. Each active stream holds one server thread, which is acceptable at this scale. On Vercel, the whole app is one Python function; streaming passes through to the browser unbuffered (verified on 2026-09-29).
 
 ### Credit hold (reservation)
 
@@ -57,11 +57,11 @@ hold = ⌈input bound × input rate⌉ + ⌈max_output_tokens × output rate⌉,
 
 ### Concurrency safety
 
-Every wallet change is a conditional `UPDATE … WHERE balance − held >= amount` in a short transaction, followed by a ledger insert. Duplicates are stopped by the unique `(user, client_request_id)` constraint. SQLite runs with `transaction_mode=IMMEDIATE`, a 20 s busy timeout and WAL, so concurrent writers wait instead of failing. Threaded tests show parallel tabs cannot overspend or double-charge.
+Every wallet change is a conditional `UPDATE … WHERE balance − held >= amount` in a short transaction, followed by a ledger insert. Duplicates are stopped by the unique `(user, client_request_id)` constraint. SQLite runs with `transaction_mode=IMMEDIATE`, a 20 s busy timeout and WAL, so concurrent writers wait instead of failing. On PostgreSQL, the conditional `UPDATE` does the same job under row locks. Server-side cursors are off, because Neon's pooled URL goes through PgBouncer in transaction mode. Threaded tests show parallel tabs cannot overspend or double-charge, on both engines.
 
 ### Never retry a sent request
 
-The proxy client uses `httpx.HTTPTransport(retries=3)`, which retries **connection attempts only** (nothing was sent). A request that was sent is never retried, following the proxy docs. Timeouts are 5 s to connect, 90 s between chunks, and 20 minutes per reply (sized for the 25,000-token limit).
+The proxy client uses `httpx.HTTPTransport(retries=3)`, which retries **connection attempts only** (nothing was sent). A request that was sent is never retried, following the proxy docs. Timeouts are 5 s to connect, then `REPLY_CHUNK_TIMEOUT_SECONDS` between chunks and `REPLY_MAX_SECONDS` per reply. Locally these are 90 s and 20 min (sized for the 25,000-token limit). On Vercel they are 25 s and 260 s, so the app ends a slow reply itself before the 300 s function limit (partial text kept, hold left for review).
 
 ### Stop and disconnects
 
@@ -96,4 +96,5 @@ Generations in `needs_reconciliation` keep their hold. In `/admin/` → Generati
 - Replies are rendered with `markdown-it-py` (CommonMark plus tables and strikethrough, raw HTML **off**), then sanitized by `nh3`, which allows a fixed tag list and http/https/mailto links with `rel="noopener noreferrer nofollow"`. While streaming, text is shown as plain `textContent`.
 - Every conversation lookup goes through `chat.views.owned()` / `owner=request.user`, so another user's chat returns 404.
 - Keys live only in settings and the proxy client. A test checks that they never appear in any page or stream.
+- On Vercel (`VERCEL` set) or with `HTTPS_ONLY`: HTTPS redirect, `Secure` cookies, HSTS (one year, this host only), and `X-Forwarded-Proto` trusted. `check --deploy` is clean, enforced by `config/tests.py`.
 - The `litechat.*` loggers (internal name, kept through the rebrand) record IDs, statuses and amounts, never prompts, replies or headers. The admin shows conversation metadata only.

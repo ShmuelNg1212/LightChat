@@ -1,6 +1,6 @@
 # Setup
 
-How to install, configure and run LightChat locally. (The repository folder is still named `litechat_midterm`.)
+How to install, configure and run LightChat locally. For the live Vercel deployment, see [deployment.md](deployment.md).
 
 ## Requirements
 
@@ -11,9 +11,9 @@ How to install, configure and run LightChat locally. (The repository folder is s
 ## Install
 
 ```sh
-cd /Users/shm/litechat_midterm
-/opt/homebrew/bin/python3.14 -m venv .venv
-.venv/bin/pip install -r requirements.txt
+cd /Users/shm/LightChat
+/opt/homebrew/bin/python3.14 -m venv --clear .venv
+.venv/bin/python -m pip install -r requirements.txt   # survives a renamed folder, unlike .venv/bin/pip
 cp .env.example .env        # then fill in the keys
 .venv/bin/python manage.py migrate
 ```
@@ -30,7 +30,11 @@ cp .env.example .env        # then fill in the keys
 | `DEBUG` | locally | `True` enables debug pages and a fixed development `SECRET_KEY` |
 | `SECRET_KEY` | when `DEBUG` is off | Django secret key; the app refuses to start without one |
 | `ALLOWED_HOSTS` | when deployed | Comma-separated host names (default `localhost,127.0.0.1`) |
-| `DATABASE_URL` | no | e.g. `postgres://user:pass@host:5432/db`; defaults to `db.sqlite3` |
+| `DATABASE_URL` | no (required on Vercel) | e.g. `postgres://user:pass@host:5432/db`; defaults to `db.sqlite3` |
+| `DB_CONN_MAX_AGE` | no | Seconds to keep a database connection (default 60; `0` on Vercel) |
+| `REPLY_MAX_SECONDS` | no | Longest a reply may stream (default 1200; `260` on Vercel) |
+| `REPLY_CHUNK_TIMEOUT_SECONDS` | no | Longest wait between streamed chunks (default 90; `25` on Vercel) |
+| `HTTPS_ONLY` | no | Secure cookies, HSTS, HTTPS redirect. Defaults to on when `VERCEL` is set |
 | `PROXY_BASE_URL` | no | Defaults to `https://proxy.litechat.ai` |
 | `LOG_LEVEL` | no | Level for `litechat.*` loggers (default `INFO`) |
 
@@ -54,7 +58,9 @@ Create an admin account (needed to review held credit at `/admin/`):
 .venv/bin/python manage.py test
 ```
 
-115 tests. They never call the real proxy: an `httpx.MockTransport` replaces the network, and real captured responses in `doc/fixtures/proxy/` are replayed. SQLite tests use a file-backed test database (`test_db.sqlite3`, gitignored) so locking behaves as in development.
+140 tests. They never call the real proxy: an `httpx.MockTransport` replaces the network, and real captured responses in `doc/fixtures/proxy/` are replayed. SQLite tests use a file-backed test database (`test_db.sqlite3`, gitignored) so locking behaves as in development.
+
+To run the suite on PostgreSQL (as deployed), point `DATABASE_URL` at a local server, for example Homebrew `postgresql@17`: `DATABASE_URL=postgres://user@127.0.0.1:5432/lightchat .venv/bin/python manage.py test`. It passed on 2026-09-29.
 
 ## Design checks
 
@@ -87,5 +93,4 @@ The assessor README and `SKILLS-USED.md` are inputs kept only in `submission/inp
 
 ## Not yet set up
 
-- Deployment. `check --deploy` still reports HSTS, SSL redirect, secure session and CSRF cookies, and a development-only email backend. A production server (e.g. gunicorn with threads) and static-file serving are not configured.
 - Password-reset email and Google sign-in.

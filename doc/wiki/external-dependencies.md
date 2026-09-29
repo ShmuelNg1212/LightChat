@@ -63,6 +63,8 @@ All three interfaces accept an output limit of **25,000 tokens** (`max_tokens` /
 
 `proxy.litechat.ai` has only an IPv4 address (`145.239.154.51`). From the development machine, about half of all TCP connection attempts time out before connecting, and occasionally four attempts in a row fail (seen twice in about ten runs on 2026-09-29), which surfaces to users as "Could not reach the model service" (not charged). The client therefore retries *connection attempts only* (httpx transport `retries=3`, 5 s connect timeout). A request that was sent is never retried.
 
+From Vercel `fra1` (Frankfurt, about 10 ms from the proxy), all 9 test calls on 2026-09-29 connected without a failure. The first byte arrived in about 0.3 s and the first token in about 1 s.
+
 ### Errors and reliability (documented)
 
 | Status | Meaning per docs |
@@ -85,12 +87,37 @@ Prices, currency, billing rules and rate-limit numbers. The app therefore uses i
 
 Image inputs and provider file APIs are available. Files are private per account and provider and expire after one hour. Limits: 64 MiB per file; 100 files and 256 MiB per account/provider. No audio or video generation.
 
+## Vercel (hosting)
+
+Docs read on 2026-09-29: [Django on Vercel](https://vercel.com/docs/frameworks/full-stack/django), [function limits](https://vercel.com/docs/functions/limitations), [environments](https://vercel.com/docs/deployments/environments) and [Deployment Protection](https://vercel.com/docs/deployment-protection). Status: **verified by deployment**.
+
+- **Account:** `shmuelng8310-5097`, team `shmuelng8310-5097s-projects`, **Hobby** (free, non-commercial). **Project:** `lightchat`. **Production domain:** `lightchat-five.vercel.app`.
+- **Django:** detected from `manage.py` and `WSGI_APPLICATION`. `collectstatic` runs automatically when `STATIC_ROOT` is set. Python version from `.python-version` (3.14 supported).
+- **Limits (Hobby):** functions last at most 300 s, including streaming; bodies are at most 4.5 MB; the function bundle is at most 500 MB.
+- **Streaming:** Python WSGI streaming responses reach the browser incrementally (observed on 2026-09-29).
+- **First deployment:** a new project's first deployment is **always production**, even without `--prod`.
+- **Deployment Protection:**
+  - **Standard** (current) protects every URL except production domains.
+  - **All Deployments** protects everything and is free on Hobby.
+  - Automated tests pass the `x-vercel-protection-bypass` header, using the project's "Protection Bypass for Automation" secret.
+- **System variables used:** `VERCEL`, `VERCEL_URL`, `VERCEL_BRANCH_URL` and `VERCEL_PROJECT_PRODUCTION_URL`. They hold host names without `https://`.
+
+## Neon Postgres (database)
+
+Installed through the Vercel Marketplace (Vercel-managed). Docs: [Neon Vercel integration](https://neon.com/docs/guides/vercel-native-integration), [pricing](https://neon.com/pricing). Status: **verified by deployment**.
+
+- **Plan:** Free (0.5 GB, 100 CU-hours a month, sleeps after 5 min idle, no card). **Region:** `aws-eu-central-1` (Frankfurt). Connected to Production and Preview.
+- **Injected variables:** `DATABASE_URL` (pooled, PgBouncer transaction mode) and `DATABASE_URL_UNPOOLED` (direct), plus `PG*` / `POSTGRES_*` / `NEON_*` variables that the app doesn't use. All are sensitive, so the CLI can't read them.
+- **Preview branching** is turned on, but **it created no branch for CLI deployments**. Previews use the production database (see [deployment.md](deployment.md)).
+
 ## Required secrets
 
-Set in the untracked `.env` (template: `.env.example`).
+Locally: in the untracked `.env` (template: `.env.example`). Deployed: in Vercel environment variables (see [deployment.md](deployment.md)).
 
 | Variable | Purpose | Status |
 |---|---|---|
 | `BUILD_OPENAI_KEY` | OpenAI-interface key | verified working |
 | `BUILD_ANTHROPIC_KEY` | Anthropic-interface key | verified working |
 | `BUILD_GOOGLE_KEY` | Google-interface key (variable name is ours; the docs call it "YOUR_GOOGLE_KEY") | verified working |
+| `SECRET_KEY` | Django signing key. Required when `DEBUG` is off; set on Vercel, different per environment | set |
+| `DATABASE_URL` / `DATABASE_URL_UNPOOLED` | Neon Postgres (on Vercel, set by the integration) | verified working |

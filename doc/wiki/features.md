@@ -22,7 +22,7 @@ What LightChat does today, from the user's point of view. The look and behavior 
 | Claude Haiku 4.5 · Anthropic interface | Anthropic Messages | 5.00 | 20.00 | 25,000 tokens |
 | Gemini 3.8 Flash · Google interface | Google generateContent | 5.00 | 20.00 | 25,000 tokens |
 
-A reply's writing therefore costs at most **0.50 credits**. Reading the conversation is charged on top, and only tokens actually used are charged. A reply can stream for up to 20 minutes; at the observed ~135 tokens/s a full-length reply takes about 3 minutes.
+A reply's writing therefore costs at most **0.50 credits**. Reading the conversation is charged on top, and only tokens actually used are charged. A reply can stream for up to 20 minutes locally and **260 seconds on the live site** (Vercel's free-plan limit). At the observed ~135 tokens/s, a full-length reply takes about 3 minutes.
 
 All three are answered by **DeepSeek Flash** behind different provider interfaces. The app says so below the message box (on phones, under **How models and prices work**) and on the Credits page. Rates are editable in the admin (Catalog → Model offerings). Past charges keep the rate in force when they were made.
 
@@ -71,4 +71,4 @@ The light and dark themes follow the OS.
 
 ## Not included yet
 
-Attachments, web search, Google sign-in, password reset by email, real payments, and a public deployment. The Credits page, delete confirmation and admin use the LightChat colors and fonts but haven't been redesigned yet (planned slice 2).
+Attachments, web search, Google sign-in, password reset by email, and real payments. (The app is publicly deployed at https://lightchat-five.vercel.app.) The Credits page, delete confirmation and admin use the LightChat colors and fonts but haven't been redesigned yet (planned slice 2).
