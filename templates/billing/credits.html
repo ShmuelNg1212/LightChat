@@ -21,7 +21,7 @@
 
 <h2>Models and prices</h2>
 <p class="muted small">Prices are in credits per 1 million tokens. You pay for tokens read (your conversation) and written (the reply). Before each reply, the most it could cost is held from your balance. Afterwards you're charged the actual amount and the rest is released.</p>
-<div class="table-scroll">
+<div class="table-scroll" tabindex="0" role="region" aria-label="Models and prices">
 <table class="data">
   <thead><tr><th>Model</th><th class="num">Input <span class="nowrap">/ 1M</span></th><th class="num">Output <span class="nowrap">/ 1M</span></th><th class="num">Max reply</th></tr></thead>
   <tbody>
@@ -37,7 +37,7 @@
 
 <h2>History</h2>
 {% if page.object_list %}
-<div class="table-scroll">
+<div class="table-scroll" tabindex="0" role="region" aria-label="Credit history">
 <table class="data">
   <thead><tr><th>When</th><th>What</th><th class="num">Change</th><th class="num">Available after</th></tr></thead>
   <tbody>

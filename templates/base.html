@@ -15,7 +15,7 @@
 </head>
 <body class="{% block body_class %}{% endblock %}">
   {% include "partials/icons.html" %}
-  <a class="skip-link" href="#main">Skip to content</a>
+  {% block skip_link %}<a class="skip-link" href="#main">Skip to content</a>{% endblock %}
   <header class="topbar">
     {% block topbar_start %}{% endblock %}
     <a class="brand" href="{% url 'home' %}">{% include "partials/brand_mark.html" %}<span class="brand-name">LightChat</span></a>

@@ -260,3 +260,8 @@ class HardeningTests(TestCase):
         self.assertNotIn("<script>", events[-1]["html"])
         page = self.client.get(reverse("conversation", args=[events[0]["conversation"]]))
         self.assertContains(page, "a" * 3000)
+
+    def test_chat_skip_link_jumps_past_the_rail(self):
+        html = self.client.get(reverse("home")).content.decode()
+        self.assertIn('<a class="skip-link" href="#messages">Skip to conversation</a>', html)
+        self.assertIn('id="messages" role="region" aria-label="Messages" tabindex="0"', html)
