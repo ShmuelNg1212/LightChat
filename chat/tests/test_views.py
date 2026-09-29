@@ -161,3 +161,10 @@ class MessageDisplayTests(TestCase):
         page = self.client.get(reverse("conversation", args=[convo.pk]))
         self.assertContains(page, "You were not charged")
         self.assertNotContains(page, "data-retry")
+
+    def test_new_chat_gets_its_header_immediately(self):
+        events = self.send(openai_reply("Hi"))
+        self.assertIn('class="chat-header"', events[0]["header_html"])
+        self.assertIn("Rename", events[0]["header_html"])
+        second = self.send(openai_reply("Again"), conversation=events[0]["conversation"])
+        self.assertEqual(second[0]["header_html"], "")

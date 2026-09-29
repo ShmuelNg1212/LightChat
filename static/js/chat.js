@@ -98,6 +98,9 @@
     if (!start.created) return;
     history.replaceState(null, "", start.url);
     document.title = start.title + " · Litechat";
+    if (start.header_html && !document.querySelector(".chat-header")) {
+      scroller.before(fromHTML(start.header_html));
+    }
     const empty = document.getElementById("sidebar-empty");
     if (empty) empty.remove();
     const convoList = document.getElementById("convo-list");

@@ -32,29 +32,7 @@
 </aside>
 
 <section class="chat-main" aria-label="Conversation">
-  {% if current %}
-  <header class="chat-header">
-    <h1 id="chat-title">{{ current.display_title }}</h1>
-    <details>
-      <summary class="icon-button" aria-label="Chat options">
-        <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6" fill="currentColor"/><circle cx="10" cy="10" r="1.6" fill="currentColor"/><circle cx="16" cy="10" r="1.6" fill="currentColor"/></svg>
-      </summary>
-      <div class="menu-panel">
-        <form method="post" action="{% url 'rename' current.pk %}">
-          {% csrf_token %}
-          <label for="id_title" class="small muted">Rename</label>
-          <div class="inline-form">
-            <input type="text" name="title" id="id_title" value="{{ current.title }}" maxlength="120" required>
-            <button type="submit" class="button button-small">Save</button>
-          </div>
-        </form>
-        <form method="get" action="{% url 'delete' current.pk %}">
-          <button type="submit" class="button button-small button-danger">Delete chat…</button>
-        </form>
-      </div>
-    </details>
-  </header>
-  {% endif %}
+  {% if current %}{% include "chat/_header.html" %}{% endif %}
 
   <div class="messages" id="messages" role="region" aria-label="Messages" tabindex="0">
     <div class="messages-inner" id="messages-inner">

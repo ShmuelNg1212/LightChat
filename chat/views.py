@@ -129,6 +129,9 @@ def send(request):
                 "user_message": generation.user_message_id,
                 "reserved": format_credits(generation.reserved),
                 "available": format_credits(get_wallet(request.user).available),
+                "header_html": render_to_string("chat/_header.html", {"current": convo}, request=request)
+                if started.created_conversation
+                else "",
             }
         )
         for kind, value in services.run(generation):
