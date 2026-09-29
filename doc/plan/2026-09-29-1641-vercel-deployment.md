@@ -79,3 +79,8 @@ The Gardener asked for the Study and Plan together, so both are approved in one 
 - Task 6 also added a guard (`271c9d0`): on Vercel the app refuses to start without `DATABASE_URL`, so it can never quietly run on a throwaway SQLite file.
 - Task 8: created a new project, `lightchat`, under `shmuelng8310-5097s-projects` (Hobby). The existing `digitalcafe` project was not touched. The CLI created it with the generic preset, so `vercel.json` now pins `"framework": "django"` (`885b80f`). The CLI's own `.gitignore` edit was reverted, because the existing rules already cover `.vercel/` and `.env.local`.
 - Task 10 was done before task 9, because it doesn't depend on Neon. Production and Preview each hold `SECRET_KEY` (random, different per environment, sensitive), the three `BUILD_*` keys (sensitive, piped from `.env`), `REPLY_MAX_SECONDS=260`, `REPLY_CHUNK_TIMEOUT_SECONDS=25` and `DB_CONN_MAX_AGE=0`.
+- **Incident, task 11 (2026-09-29 ~17:05):** `vercel deploy` without `--prod` created a **production** deployment, because Vercel always makes a new project's first deployment production (docs: /docs/deployments/environments#first-deployment). The Study missed this.
+  - Its build ran migrations on the production Neon database. The schema is empty and the migrations would run at launch anyway.
+  - It was public at `lightchat-five.vercel.app` for about 3 minutes, because Standard Protection leaves production domains open.
+  - It was removed with `vercel rm`, and the URL now returns 404. Whether anyone signed up in that window can't be read from the CLI, because Neon's variables are sensitive.
+  - The project still has no production target, so any next deploy would again be production. Paused for the Gardener's decision.
