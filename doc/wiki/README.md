@@ -4,7 +4,7 @@ Living documentation. It describes the project **as it exists now**, not as plan
 
 ## Current state
 
-**LightChat** is a pay-as-you-go chat app for occasional, nontechnical users. They sign up, receive 5.00 demo credits, and chat with three models reached through BUILD LLM Proxy (all answered by DeepSeek Flash). Before sending, they see what a reply could cost. While it's written, they see the credit held. Afterwards they see exactly what it cost, and their chats are saved. It's live at **https://lightchat-five.vercel.app** (Vercel Hobby, with Neon Postgres, in Frankfurt), and it also runs locally.
+**LightChat** is a pay-as-you-go chat app for occasional, nontechnical users. They sign up, receive 5.00 demo credits, and chat with three models reached through BUILD LLM Proxy (all answered by DeepSeek Flash). Before sending, they see what a reply could cost. While it's written, they see the credit held. Afterwards they see exactly what it cost, and their chats are saved. It's live at **https://lightchat-five.vercel.app** (Vercel Hobby, with Neon Postgres, in Frankfurt). Pushes to `main` on GitHub deploy automatically once the tests pass in the build. It also runs locally.
 
 The product was built as a replica of the Litechat product's core functionality and has since been rebranded as the independent LightChat, with its own identity. See [PRODUCT.md](../../PRODUCT.md).
 
@@ -18,7 +18,7 @@ Working agreement: [AGENTS.md](../../AGENTS.md), mirrored in [CLAUDE.md](../../C
 | [architecture.md](architecture.md) | Apps, data model, the metered send flow, money and concurrency rules, front end, security |
 | [features.md](features.md) | What users and admins can do today, and how failures are handled |
 | [external-dependencies.md](external-dependencies.md) | BUILD LLM Proxy contract (sample-verified), Vercel and Neon, connectivity notes, required keys |
-| [deployment.md](deployment.md) | The live Vercel deployment: env vars, deploying, rollback, production admin commands, limits |
+| [deployment.md](deployment.md) | The live Vercel deployment: env vars, Git deploy workflow and test gate, rollback and security-incident runbooks, production admin commands, limits |
 
 Real captured proxy responses (redacted) are in [`doc/fixtures/proxy/`](../fixtures/proxy/).
 
@@ -53,3 +53,4 @@ A test (`chat/tests/test_branding.py`) fails if "Litechat" appears on any user-f
 | LightChat rebrand (slice 1) | [study](../study/2026-09-29-1357-lightchat-rebrand.md) | [plan](../plan/2026-09-29-1406-lightchat-rebrand.md) · [brief](../design/2026-09-29-1357-lightchat-identity-brief.md) | Done (accepted 2026-09-29) |
 | Assessment submission package | [study](../study/2026-09-29-1456-assessment-package.md) | [plan](../plan/2026-09-29-1456-assessment-package.md) | Done (accepted 2026-09-29) |
 | Vercel deployment | [study](../study/2026-09-29-1641-vercel-deployment.md) | [plan](../plan/2026-09-29-1641-vercel-deployment.md) | Done (live 2026-09-29) |
+| Automatic deploys from GitHub | [study](../study/2026-09-29-1730-github-auto-deploy.md) | [plan](../plan/2026-09-29-1730-github-auto-deploy.md) | In progress |

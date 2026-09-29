@@ -9,11 +9,11 @@ LightChat is live at **https://lightchat-five.vercel.app**. It runs on Vercel's 
 | Django app | One Vercel Function (Python 3.14, WSGI, `config/wsgi.py`), region **`fra1`** (Frankfurt) | Close to the proxy in Roubaix, France. `maxDuration: 300` s, the Hobby maximum |
 | Static files | Vercel CDN at `/static/` | Vercel runs `collectstatic` automatically because `STATIC_ROOT` is set |
 | Database | Neon Postgres (Free), `aws-eu-central-1` (Frankfurt) | The app uses the pooled `DATABASE_URL` (PgBouncer). Migrations use `DATABASE_URL_UNPOOLED` |
-| Migrations | In every Vercel build (`vercel.json` → `buildCommand`) | Run before the deployment serves traffic |
+| Build gate | Every Vercel build (`vercel.json` → `buildCommand`) | 1. The **full test suite** runs on a throwaway SQLite file (no Neon, no paid proxy calls). 2. Only if all tests pass, **migrations** run over `DATABASE_URL_UNPOOLED`. A failing test fails the build, and the live site keeps its current version |
 
 - **Vercel project:** `lightchat` in `shmuelng8310-5097s-projects`. The local link is in `.vercel/` (gitignored).
 - **Configuration files:** [`vercel.json`](../../vercel.json) and [`.vercelignore`](../../.vercelignore).
-- **Git:** the project is connected to GitHub [`ShmuelNg1212/LightChat`](https://github.com/ShmuelNg1212/LightChat) (production branch `main`). Pushes **don't deploy** (`git.deploymentEnabled: false` in `vercel.json`), so every deploy is a deliberate CLI command. Deployments show their commit on GitHub and in the Vercel dashboard.
+- **Git:** the project is connected to GitHub [`ShmuelNg1212/LightChat`](https://github.com/ShmuelNg1212/LightChat) (production branch `main`). **Every push deploys** (Vercel's default Git workflow): `main` goes to production, and any other branch or pull request gets a private preview. Deployments show their commit on GitHub and in the Vercel dashboard.
 
 ## Environment variables (Vercel → Settings → Environment Variables)
 
@@ -50,25 +50,45 @@ When `VERCEL` is set (or `HTTPS_ONLY=True`), `config/settings.py` turns on:
 
 ## Deploying a change
 
-1. Commit the change. Tests must pass locally: `.venv/bin/python manage.py test`.
-2. **Preview:** `npx vercel@latest deploy`. Preview URLs need a Vercel login.
-3. Test the preview URL in a browser where you're signed in to Vercel.
-4. **Production:** `npx vercel@latest deploy --prod`. This builds again, runs migrations, and moves `lightchat-five.vercel.app` to the new deployment when the build succeeds.
+1. Work on a branch: `git switch -c my-change`. Commit, and run `.venv/bin/python manage.py test` locally.
+2. `git push -u origin my-change`. Vercel builds a **preview** (the tests run in the build) and posts its URL on the GitHub commit or pull request. Preview URLs need a Vercel login.
+3. Test the preview in a browser where you're signed in to Vercel.
+4. Merge into `main` (a pull request on GitHub, or `git switch main && git merge my-change && git push`). Vercel builds **production**: tests, then migrations, then `lightchat-five.vercel.app` switches to the new version, but only if the build succeeds.
 
-> ⚠️ **Preview and production share one database.** Neon's automatic preview branching doesn't happen for CLI deployments, so the preview build **runs migrations against the production database**, and anything done on a preview is real data.
->
-> - Additive migrations (new tables or columns) are safe.
-> - A migration that removes or renames something needs two releases: first deploy code that no longer uses the old field, then deploy the migration that removes it.
-> - To isolate previews, create a Neon branch (Neon console → Branches) and set a **Preview-only** `DATABASE_URL` / `DATABASE_URL_UNPOOLED` pointing to it.
+The CLI still works for one-off deploys: `npx vercel@latest deploy` (preview) and `npx vercel@latest deploy --prod`. **CLI previews share the production database** (see below).
 
-## Rollback
+### Database changes: additive only
 
-| Situation | What to do |
-|---|---|
-| The new code is broken | `npx vercel@latest rollback`. This instantly points production back to the previous production deployment (on Hobby, only the one just before it). Or, in the dashboard: Deployments → pick an older production deployment → **Promote** |
-| Back to an older version | Check out the old commit, then `npx vercel@latest deploy --prod` |
-| A migration went wrong | Rolling back the code **does not undo migrations**. Deploy a fix forward (a new migration), or restore the database in the Neon console (point-in-time restore, within the restore window your Neon plan includes) |
-| Take the site offline fast | Vercel → Settings → Deployment Protection → **All Deployments** (free). Everyone then needs a Vercel login. Switch back to **Standard Protection** to reopen |
+Migrations run on the production database **before** the new version goes live, and a rollback **doesn't undo them**. So every release must keep the database usable by the previous version:
+- ✅ Adding tables, adding nullable columns or columns with defaults, adding indexes, data migrations that only add rows.
+- ❌ Removing or renaming a column or table in the same release as the code change. Do it in two releases instead: first deploy code that no longer uses the field, then (one release later) the migration that removes it.
+
+### Preview databases
+
+- **Git previews (a branch push or a pull request) get their own Neon database branch**, a copy-on-write copy of production made when the preview is built. Anything done on such a preview never reaches production. Verified 2026-09-29: an account created on a Git preview could not sign in to production.
+- **CLI previews (`npx vercel@latest deploy`) share the production database** (no Neon branch is made), and their build migrates it. Prefer Git branches for previews.
+- **Housekeeping:** Neon Free allows 10 branches per project. Preview branches are deleted when Vercel deletes the preview deployments (after 6 months by default). If Neon reports the limit, delete old `preview/…` branches in the Neon console → Branches. Never delete `main`.
+
+## Rollback runbook (a bug in production)
+
+1. **Roll back:** Vercel → project **lightchat** → Production tile → **Instant Rollback** → **Confirm**, or `npx vercel@latest rollback`. The previous production version serves again within seconds, with no rebuild.
+   - On Hobby, you can only go back **one** release. For something older, revert the bad commit on GitHub (`git revert <sha> && git push`). The revert deploys itself, after the rollback is undone (step 3).
+2. **While rolled back, pushes to `main` don't go live.** Vercel pauses auto-assignment of the production domain, so a follow-up push can't undo the rollback by accident. Builds still run, so fixes can be checked on their deployment URL.
+3. **Resume normal releases:** push the fix, then Vercel → Production tile → **Undo Rollback** → pick the fixed deployment → **Confirm**, or `npx vercel@latest promote <deployment-url>`.
+4. **Database:** rollback restores code only. If a migration caused the bug, deploy a forward fix (a new migration), or restore the database from the Neon console (point-in-time restore, within the restore window your Neon plan includes).
+
+## Security-incident runbook (a leaked key, abuse, a vulnerability)
+
+Rollback is **not** the tool here: a rolled-back deployment keeps the environment variables it was built with.
+
+1. **Close the site (seconds, free):** Vercel → Settings → Deployment Protection → **All Deployments** → Save. Every URL now needs a Vercel login, and the public is locked out.
+2. **Rotate what leaked:**
+   - A **proxy key:** ask the BUILD proxy administrator for a new key, then `npx vercel@latest env rm BUILD_OPENAI_KEY production` and add the new one (see *Environment variables* above). Do the same for Preview.
+   - **`SECRET_KEY`:** replace it as shown above. This signs everyone out.
+   - **The database password:** Neon console → Roles → reset the password. The Vercel integration updates `DATABASE_URL*`.
+3. **Redeploy** so the new values take effect: push a commit, or `npx vercel@latest deploy --prod`.
+4. **Check,** then reopen: Deployment Protection → **Standard Protection** → Save.
+5. **Review the damage:** `/admin/` → Generations and Ledger entries (unusual sign-ups or spending), and Vercel → Logs.
 
 ## Operations against production
 

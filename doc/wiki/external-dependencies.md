@@ -91,7 +91,7 @@ Image inputs and provider file APIs are available. Files are private per account
 
 Docs read on 2026-09-29: [Django on Vercel](https://vercel.com/docs/frameworks/full-stack/django), [function limits](https://vercel.com/docs/functions/limitations), [environments](https://vercel.com/docs/deployments/environments) and [Deployment Protection](https://vercel.com/docs/deployment-protection). Status: **verified by deployment**.
 
-- **Account:** `shmuelng8310-5097`, team `shmuelng8310-5097s-projects`, **Hobby** (free, non-commercial). **Project:** `lightchat`, connected to GitHub `ShmuelNg1212/LightChat` (production branch `main`; Git-triggered deploys switched off). **Production domain:** `lightchat-five.vercel.app`.
+- **Account:** `shmuelng8310-5097`, team `shmuelng8310-5097s-projects`, **Hobby** (free, non-commercial). **Project:** `lightchat`, connected to GitHub `ShmuelNg1212/LightChat` (production branch `main`; every push deploys: `main` to production, other branches to previews). **Production domain:** `lightchat-five.vercel.app`.
 - **Django:** detected from `manage.py` and `WSGI_APPLICATION`. `collectstatic` runs automatically when `STATIC_ROOT` is set. Python version from `.python-version` (3.14 supported).
 - **Limits (Hobby):** functions last at most 300 s, including streaming; bodies are at most 4.5 MB; the function bundle is at most 500 MB.
 - **Streaming:** Python WSGI streaming responses reach the browser incrementally (observed on 2026-09-29).
@@ -108,7 +108,7 @@ Installed through the Vercel Marketplace (Vercel-managed). Docs: [Neon Vercel in
 
 - **Plan:** Free (0.5 GB, 100 CU-hours a month, sleeps after 5 min idle, no card). **Region:** `aws-eu-central-1` (Frankfurt). Connected to Production and Preview.
 - **Injected variables:** `DATABASE_URL` (pooled, PgBouncer transaction mode) and `DATABASE_URL_UNPOOLED` (direct), plus `PG*` / `POSTGRES_*` / `NEON_*` variables that the app doesn't use. All are sensitive, so the CLI can't read them.
-- **Preview branching** is turned on, but **it created no branch for CLI deployments**. Previews use the production database (see [deployment.md](deployment.md)).
+- **Preview branching** is on. **Git-triggered previews** get their own copy-on-write database branch (verified on 2026-09-29), and the integration runs as a deployment integration, with no per-branch variables listed in Vercel. **CLI previews get no branch** and use the production database (see [deployment.md](deployment.md)).
 
 ## Required secrets
 
