@@ -129,3 +129,35 @@ class MessageDisplayTests(TestCase):
         credits = self.client.get(reverse("credits"))
         self.assertContains(credits, "Models and prices")
         self.assertContains(credits, "Claude Haiku 4.5 · Anthropic interface")
+
+    def test_failed_reply_explains_and_offers_retry(self):
+        payload = {"prompt": "Hello", "model": "gpt-5-6-luna", "request_id": rid()}
+        with FakeProxy('{"error": {}}', status=429):
+            events = read_events(self.client.post(reverse("send"), json.dumps(payload), content_type="application/json"))
+        html = events[-1]["html"]
+        self.assertIn("You were not charged", html)
+        self.assertIn("busy", html)
+        self.assertIn("data-retry", html)
+
+        convo = Conversation.objects.get()
+        user_message = convo.messages.get(role="user")
+        retry = self.send(openai_reply("Recovered"), prompt="", conversation=convo.pk, retry=user_message.pk)
+        self.assertEqual(retry[-1]["status"], "completed")
+        page = self.client.get(reverse("conversation", args=[convo.pk]))
+        self.assertContains(page, "Recovered")
+        self.assertNotContains(page, "You were not charged")
+        self.assertEqual(convo.messages.filter(role="user").count(), 1)
+
+    def test_truncated_reply_is_labelled(self):
+        events = self.send(openai_reply("Long answer", finish="length"))
+        self.assertIn("cut off", events[-1]["html"])
+
+    def test_retry_only_offered_on_latest_message(self):
+        payload = {"prompt": "First", "model": "gpt-5-6-luna", "request_id": rid()}
+        with FakeProxy('{"error": {}}', status=429):
+            read_events(self.client.post(reverse("send"), json.dumps(payload), content_type="application/json"))
+        convo = Conversation.objects.get()
+        self.send(openai_reply("OK"), prompt="Second", conversation=convo.pk)
+        page = self.client.get(reverse("conversation", args=[convo.pk]))
+        self.assertContains(page, "You were not charged")
+        self.assertNotContains(page, "data-retry")

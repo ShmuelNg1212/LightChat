@@ -60,7 +60,7 @@
     <div class="messages-inner" id="messages-inner">
       {% if current %}
         {% for m in chat_messages %}
-          {% include "chat/_message.html" with m=m %}
+          {% include "chat/_message.html" with m=m latest_user_id=latest_user_id %}
         {% endfor %}
       {% else %}
         <div class="empty-state" id="empty-state">

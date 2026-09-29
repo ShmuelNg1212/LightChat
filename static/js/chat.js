@@ -27,12 +27,16 @@
   const modelSelect = form.querySelector("select[name=model]");
   const conversationInput = form.querySelector("input[name=conversation]");
   const sendButton = document.getElementById("send");
+  const stopButton = document.getElementById("stop");
   const scroller = document.getElementById("messages");
   const list = document.getElementById("messages-inner");
   const live = document.getElementById("live");
   const csrf = form.querySelector("input[name=csrfmiddlewaretoken]").value;
 
   let busy = false;
+  let cancelUrl = null;
+  let controller = null;
+  let stopping = false;
   // One ID per message: a repeated submit of the same message reuses it, so the
   // server can refuse the duplicate instead of charging twice.
   let requestId = crypto.randomUUID();
@@ -76,6 +80,11 @@
   function setBusy(value) {
     busy = value;
     sendButton.disabled = value;
+    if (!value) {
+      stopButton.hidden = true;
+      stopButton.disabled = false;
+      cancelUrl = null;
+    }
     textarea.setAttribute("aria-busy", String(value));
   }
 
@@ -135,6 +144,7 @@
   async function send({ prompt, retry }) {
     if (busy) return;
     setBusy(true);
+    stopping = false;
     const empty = document.getElementById("empty-state");
     if (empty) empty.remove();
 
@@ -157,8 +167,10 @@
     };
 
     let response;
+    controller = new AbortController();
     try {
       response = await fetch(form.dataset.sendUrl, {
+        signal: controller.signal,
         method: "POST",
         headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
         body: JSON.stringify(body),
@@ -200,6 +212,8 @@
     const handle = (event) => {
       if (event.type === "start") {
         adoptConversation(event);
+        cancelUrl = event.cancel_url;
+        stopButton.hidden = false;
         if (userBubble && event.user_message) userBubble.dataset.message = event.user_message;
         reply.meta.append(el("span", "num", "Up to " + event.reserved + " credits held"), el("span", "tag tag-held", "Estimate"));
         setBalance(event.available);
@@ -240,13 +254,29 @@
       // The stream broke before the server finished. Never present it as complete.
       reply.article.dataset.status = "needs_reconciliation";
       reply.content.classList.remove("streaming");
-      const warn = el("div", "msg-warn", "The connection dropped before this reply finished. Reload the page to see its final state.");
+      const warn = el("div", "msg-warn", stopping
+        ? "Stopped. Reload the page to see what was saved and any credit held for review."
+        : "The connection dropped before this reply finished. Reload the page to see its final state.");
       reply.article.appendChild(warn);
       announce("Connection lost before the reply finished.");
     }
     setBusy(false);
     textarea.focus();
   }
+
+  stopButton.addEventListener("click", async () => {
+    if (!cancelUrl) return;
+    stopping = true;
+    stopButton.disabled = true;
+    announce("Stopping reply.");
+    try {
+      await fetch(cancelUrl, { method: "POST", headers: { "X-CSRFToken": csrf } });
+    } catch (_) { /* fall through to abort */ }
+    // If the service is silent, the server only notices the stop on the next chunk;
+    // give it a moment, then drop the connection so the page is usable again.
+    const pending = controller;
+    setTimeout(() => { if (busy && controller === pending) pending.abort(); }, 5000);
+  });
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();

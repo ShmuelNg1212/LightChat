@@ -45,6 +45,8 @@ def conversation(request, pk):
     convo = owned(request, pk)
     context = sidebar_context(request, convo)
     context["chat_messages"] = convo.messages.select_related("generation")
+    latest = convo.messages.filter(role="user").last()
+    context["latest_user_id"] = latest.pk if latest else None
     context["rename_form"] = RenameForm(instance=convo)
     return render(request, "chat/chat.html", context)
 
@@ -138,7 +140,9 @@ def send(request):
                         "type": "end",
                         "status": value.status,
                         "html": render_to_string(
-                            "chat/_message.html", {"m": value.assistant_message, "g": value}, request=request
+                            "chat/_message.html",
+                            {"m": value.assistant_message, "g": value, "latest_user_id": value.user_message_id},
+                            request=request,
                         ),
                         "available": format_credits(get_wallet(request.user).available, 2),
                     }

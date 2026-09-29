@@ -24,6 +24,26 @@
       <span class="tag tag-held">In progress</span>
     {% endif %}
   </div>
+  {% if gen.finish_reason == "length" %}
+    <div class="msg-warn">This reply hit the {{ gen.max_output_tokens }}-token limit and was cut off. Ask it to continue.</div>
+  {% elif gen.finish_reason == "filtered" %}
+    <div class="msg-warn">The model's safety filter stopped this reply.</div>
+  {% endif %}
+  {% if gen.status == "failed" %}
+    <div class="msg-error" role="alert">
+      <strong>No reply.</strong> {{ gen.error_message }} You were not charged.
+      {% if gen.user_message_id == latest_user_id %}<button type="button" class="button button-small" data-retry="{{ gen.user_message_id }}">Retry</button>{% endif %}
+    </div>
+  {% elif gen.status == "needs_reconciliation" %}
+    <div class="msg-warn">
+      <strong>{% if gen.error_kind == "cancelled" %}Stopped.{% else %}This reply didn't finish.{% endif %}</strong>
+      {% if gen.error_kind != "cancelled" %}{{ gen.error_message }}{% endif %}
+      The model service may have charged for part of it, so up to {{ gen.reserved|credits }} credits stay held until it's reviewed. Anything not owed is returned.
+      {% if gen.user_message_id == latest_user_id %}<button type="button" class="button button-small" data-retry="{{ gen.user_message_id }}">Retry</button>{% endif %}
+    </div>
+  {% elif gen.status == "reconciled" and gen.resolution %}
+    <div class="msg-meta">Review: {{ gen.resolution }}</div>
+  {% endif %}
   {% endif %}
 </article>
 {% endwith %}
