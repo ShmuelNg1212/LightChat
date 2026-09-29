@@ -1,7 +1,7 @@
 # Plan: Automatic deploys from GitHub
 - **Date:** 2026-09-29 17:30
 - **Study:** [../study/2026-09-29-1730-github-auto-deploy.md](../study/2026-09-29-1730-github-auto-deploy.md)
-- **Status:** awaiting-approval
+- **Status:** in-progress
 
 ## Tasks
 - [ ] 1. `.vercelignore`: keep uploading `doc/fixtures/` and keep excluding the rest of `doc/` → `build(vercel): upload the proxy fixtures the tests replay`
