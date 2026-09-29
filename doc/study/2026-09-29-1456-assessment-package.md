@@ -2,7 +2,7 @@
 
 - **Date:** 2026-09-29 14:56
 - **Request:** Prepare an assessment submission package. Study the project files and exported transcripts, write a packaging plan, and pause for approval before assembling. Documentation and packaging only; no change to application behavior. Preserve originals, share redacted copies, exclude secrets, private databases, dependency folders and unrelated conversations. Don't invent transcripts, results, skill usage or decisions; label retrospective summaries; identify missing session exports precisely. After approval: assemble, verify, ZIP locally, report the location; don't upload. Gardener's addition: no GitHub repository is linked yet, so the package output must be gitignored.
-- **Status:** awaiting-approval (together with the [plan](../plan/2026-09-29-1456-assessment-package.md))
+- **Status:** approved 2026-09-29 with changes recorded in the plan (together with the [plan](../plan/2026-09-29-1456-assessment-package.md))
 
 ## Intended Outcome
 

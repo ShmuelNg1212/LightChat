@@ -2,7 +2,12 @@
 
 - **Date:** 2026-09-29 14:56
 - **Study:** [../study/2026-09-29-1456-assessment-package.md](../study/2026-09-29-1456-assessment-package.md)
-- **Status:** awaiting-approval
+- **Status:** in-progress
+
+> **Approved 2026-09-29, with changes from the Gardener:**
+> - Transcripts go in as **raw JSONL**. The derived `readable/` renderings are dropped. Only the required minimal redactions (email, test passwords) are applied to the copies.
+> - The **skills list** and the **assessor README** are written only inside the gitignored `submission/` folder, never committed (task 3 changes accordingly).
+> - The two open decisions were left open, so the recommended defaults apply: readable git log only (no bundle), and home paths kept.
 
 No application behavior changes: no edits to app code, templates, static files, migrations or tests. Output goes to `submission/`, which is gitignored and never uploaded.
 
@@ -15,8 +20,7 @@ submission/
 │   ├── MANIFEST.md, manifest.json     every file: path, size, SHA-256, source, kind (original | redacted copy | generated), plus missing evidence and redactions
 │   ├── 01-conversations/
 │   │   ├── SESSION-INDEX.md           chronological index (generated from JSONL timestamps; the missing sessions named precisely)
-│   │   ├── jsonl-redacted/            main session + 2 subagent logs and their .meta.json (redacted copies of the originals)
-│   │   └── readable/                  Markdown renderings derived from the JSONL (text + tool names, long outputs shortened, images omitted)
+│   │   └── jsonl/                     raw main-session + 2 subagent logs and their .meta.json (copies; only email and test passwords redacted)
 │   ├── 02-project-rules/              AGENTS.md, CLAUDE.md, PRODUCT.md, DESIGN.md, .impeccable/ config, surface brief, design.json
 │   ├── 03-skills/
 │   │   ├── SKILLS-USED.md             confirmed vs uncertain usage, with evidence (transcript timestamps), source, version, licence
@@ -49,7 +53,7 @@ Excluded entirely: `.env`, all `*.sqlite3` databases, `.venv/`, `node_modules/`,
 
 - [ ] 1. Add `submission/` to `.gitignore`. → `chore: ignore the local submission package`
 - [ ] 2. Add `tools/package_submission.py`, a stdlib-only script that builds the layout above. It copies originals, writes the redacted copies and the labeled generated files, and computes the manifest. It then **scans the finished folder** for every `.env` value, the email, the test passwords, `*.sqlite3`, `.env` files and dependency folders, and aborts if anything is found. Last, it zips the folder. → `chore(tools): add the submission packaging script`
-- [ ] 3. Write the assessor README and SKILLS-USED.md (inputs to the script, committed under `doc/submission/`). Summaries are marked *retrospective (written 2026-09-29 at packaging time)*. → `docs(submission): add assessor README and skills record`
+- [ ] 3. Write the assessor README and SKILLS-USED.md in `submission/inputs/` (gitignored, **not committed**; the script copies them in). Summaries are marked *retrospective (written 2026-09-29 at packaging time)*. No commit.
 - [ ] 4. Fetch Impeccable's upstream `LICENSE` (Apache-2.0) for inclusion. Run the full test suite verbosely and capture it. Run the packaging script. It makes no commit, because its output is gitignored.
 - [ ] 5. Verify:
   - unzip into the scratchpad and re-run the secret scan on the extracted files;
