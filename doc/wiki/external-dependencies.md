@@ -75,7 +75,7 @@ Captured with `python manage.py probe_proxy --bad-key`. Redacted transcripts are
 
 ### Not published
 
-Prices, currency, billing rules and rate-limit numbers. The app therefore uses its own demo rate table (see the active plan).
+Prices, currency, billing rules and rate-limit numbers. The app therefore uses its own demo rate table (see [features.md](features.md#models-and-prices)).
 
 ### Files (documented, not used yet)
 

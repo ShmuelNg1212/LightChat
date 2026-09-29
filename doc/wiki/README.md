@@ -4,18 +4,23 @@ Living documentation. It describes the project **as it exists now**, not as plan
 
 ## Current state
 
-The first feature (Litechat core) is implemented and awaiting the Gardener's test. Wiki pages describing the app (`setup.md`, `architecture.md`, `features.md`) are written at Sync, after acceptance. Working agreement: [AGENTS.md](../../AGENTS.md), mirrored in [CLAUDE.md](../../CLAUDE.md).
+Litechat is a pay-as-you-go chat app. Users sign up, receive demo credits, and chat with three models reached through BUILD LLM Proxy (all answered by DeepSeek Flash). They see each reply's cost and their remaining balance, and their chats are saved. It runs locally. It is not deployed yet.
+
+Working agreement: [AGENTS.md](../../AGENTS.md), mirrored in [CLAUDE.md](../../CLAUDE.md).
 
 ## Pages
 
 | Page | Contents |
 |---|---|
-| [external-dependencies.md](external-dependencies.md) | Exogenous inputs: the BUILD LLM Proxy contract, required keys, verification status |
+| [setup.md](setup.md) | Install, `.env` keys, run, test, operational commands |
+| [architecture.md](architecture.md) | Apps, data model, the metered send flow, money and concurrency rules, security |
+| [features.md](features.md) | What users and admins can do today, and how failures are handled |
+| [external-dependencies.md](external-dependencies.md) | BUILD LLM Proxy contract (sample-verified), connectivity notes, required keys |
 
-Pages to be added once the code they describe exists: `setup.md`, `architecture.md`, `features.md`.
+Real captured proxy responses (redacted) are in [`doc/fixtures/proxy/`](../fixtures/proxy/).
 
 ## Journal
 
 | Request | Study | Plan | Status |
 |---|---|---|---|
-| Litechat core functionality | [study](../study/2026-09-29-1243-litechat-core.md) | [plan](../plan/2026-09-29-1258-litechat-core.md) | Awaiting rendezvous |
+| Litechat core functionality | [study](../study/2026-09-29-1243-litechat-core.md) | [plan](../plan/2026-09-29-1258-litechat-core.md) | Done (accepted 2026-09-29) |
