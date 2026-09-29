@@ -35,7 +35,7 @@ class SendViewTests(TestCase):
         self.assertEqual((start["conversation"], start["created"], start["title"]), (convo.pk, True, "Hello"))
         self.assertEqual(end["status"], "completed")
         self.assertIn("Hi there", end["html"])
-        self.assertEqual(end["available"], "1.00")
+        self.assertEqual(end["available"], "1.0000")
 
     def test_chat_page_offers_models_and_composer(self):
         response = self.client.get(reverse("home"))

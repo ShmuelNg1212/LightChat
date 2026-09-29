@@ -43,4 +43,4 @@ class CreditsPageTests(TestCase):
 
     def test_balance_pill_in_header(self):
         response = self.client.get(reverse("home"))
-        self.assertContains(response, 'id="balance-available">0.50<')
+        self.assertContains(response, 'id="balance-available">0.5000<')

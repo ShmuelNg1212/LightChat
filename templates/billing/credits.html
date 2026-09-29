@@ -8,7 +8,7 @@
 
 <div class="stat-row">
   <div class="stat"><div class="label">Available to spend</div><div class="value">{{ wallet.available|credits }}</div></div>
-  <div class="stat"><div class="label">Held for replies in progress or under review</div><div class="value">{{ wallet.held|credits }}</div></div>
+  <div class="stat"><div class="label">Held (replies in progress or under review)</div><div class="value">{{ wallet.held|credits }}</div></div>
 </div>
 
 <form method="post" action="{% url 'topup' %}">
@@ -20,10 +20,10 @@
 </form>
 
 <h2>Models and prices</h2>
-<p class="muted small">You pay for tokens read (your conversation) and written (the reply). Before each reply, the most it could cost is held from your balance. Afterwards you're charged the actual amount and the rest is released.</p>
+<p class="muted small">Prices are in credits per 1 million tokens. You pay for tokens read (your conversation) and written (the reply). Before each reply, the most it could cost is held from your balance. Afterwards you're charged the actual amount and the rest is released.</p>
 <div class="table-scroll">
 <table class="data">
-  <thead><tr><th>Model</th><th class="num">Input, per 1M tokens</th><th class="num">Output, per 1M tokens</th><th class="num">Longest reply</th></tr></thead>
+  <thead><tr><th>Model</th><th class="num">Input <span class="nowrap">/ 1M</span></th><th class="num">Output <span class="nowrap">/ 1M</span></th><th class="num">Max reply</th></tr></thead>
   <tbody>
   {% for o in offerings %}
     <tr><td>{{ o.display_name }}</td><td class="num">{{ o.input_rate|credits:2 }}</td><td class="num">{{ o.output_rate|credits:2 }}</td><td class="num">{{ o.max_output_tokens }} tokens</td></tr>

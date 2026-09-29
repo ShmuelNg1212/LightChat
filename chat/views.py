@@ -128,7 +128,7 @@ def send(request):
                 "created": started.created_conversation,
                 "user_message": generation.user_message_id,
                 "reserved": format_credits(generation.reserved),
-                "available": format_credits(get_wallet(request.user).available, 2),
+                "available": format_credits(get_wallet(request.user).available),
             }
         )
         for kind, value in services.run(generation):
@@ -144,7 +144,7 @@ def send(request):
                             {"m": value.assistant_message, "g": value, "latest_user_id": value.user_message_id},
                             request=request,
                         ),
-                        "available": format_credits(get_wallet(request.user).available, 2),
+                        "available": format_credits(get_wallet(request.user).available),
                     }
                 )
 
