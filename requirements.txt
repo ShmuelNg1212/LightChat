@@ -6,6 +6,7 @@ Django==6.1.1
 # Configuration & database
 django-environ==0.14.0             # SECRET_KEY, DEBUG, ALLOWED_HOSTS, keys ... from the environment / .env
 dj-database-url==3.1.2             # DATABASE_URL → DATABASES (SQLite fallback locally)
+psycopg[binary]==3.3.6             # PostgreSQL driver (Neon in deployment)
 
 # Upstream LLM proxy
 httpx==0.28.1                      # direct HTTP to BUILD LLM Proxy; SDKs avoided because they auto-retry
