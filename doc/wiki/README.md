@@ -18,4 +18,4 @@ Pages to be added once the code they describe exists: `setup.md`, `architecture.
 
 | Request | Study | Plan | Status |
 |---|---|---|---|
-| Litechat core functionality | [study](../study/2026-09-29-1243-litechat-core.md) | see `doc/plan/` | Plan awaiting approval |
+| Litechat core functionality | [study](../study/2026-09-29-1243-litechat-core.md) | [plan](../plan/2026-09-29-1258-litechat-core.md) | Plan awaiting approval |
