@@ -31,3 +31,22 @@ class BrandAssetTests(SimpleTestCase):
         for fragment in ("brand/favicon.svg", "brand/favicon-32.png", "brand/apple-touch-icon.png", "brand/site.webmanifest"):
             self.assertIn(fragment, html)
         self.assertNotIn("data:image/svg+xml", html)
+
+
+class DatabaseConfigTests(SimpleTestCase):
+    def test_sqlite_waits_for_the_write_lock(self):
+        from config.deploy import database_config
+
+        db = database_config("sqlite:////tmp/x.sqlite3", conn_max_age=60)
+        self.assertEqual(db["OPTIONS"]["transaction_mode"], "IMMEDIATE")
+        self.assertFalse(db.get("DISABLE_SERVER_SIDE_CURSORS"))
+
+    def test_postgres_is_safe_behind_a_transaction_pooler(self):
+        from config.deploy import database_config
+
+        db = database_config("postgres://u:p@db.example.com:5432/app?sslmode=require", conn_max_age=0)
+        self.assertEqual(db["ENGINE"], "django.db.backends.postgresql")
+        self.assertTrue(db["DISABLE_SERVER_SIDE_CURSORS"])
+        self.assertTrue(db["CONN_HEALTH_CHECKS"])
+        self.assertEqual(db["CONN_MAX_AGE"], 0)
+        self.assertEqual(db["OPTIONS"]["sslmode"], "require")

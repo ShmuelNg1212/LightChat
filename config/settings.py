@@ -12,9 +12,10 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 
 from pathlib import Path
 
-import dj_database_url
 import environ
 from django.core.exceptions import ImproperlyConfigured
+
+from config.deploy import database_config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -96,19 +97,12 @@ WSGI_APPLICATION = "config.wsgi.application"
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
 DATABASES = {
-    "default": dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=60,
+    "default": database_config(
+        env("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
+        conn_max_age=env.int("DB_CONN_MAX_AGE", default=60),
     )
 }
 if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
-    # Concurrent requests (streams, several tabs) must wait for the write lock
-    # rather than fail: take it at transaction start and allow a busy timeout.
-    DATABASES["default"]["OPTIONS"] = {
-        "transaction_mode": "IMMEDIATE",
-        "timeout": 20,
-        "init_command": "PRAGMA journal_mode=WAL;",
-    }
     DATABASES["default"]["TEST"] = {"NAME": BASE_DIR / "test_db.sqlite3"}
 
 
