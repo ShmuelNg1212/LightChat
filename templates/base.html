@@ -1,0 +1,35 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Litechat{% endblock %} · Litechat</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  {% block head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="topbar">
+    {% block topbar_start %}{% endblock %}
+    <a class="brand" href="{% url 'home' %}">Litechat</a>
+    {% if user.is_authenticated %}
+      <nav class="topnav" aria-label="Account">
+        {% block topnav_extra %}{% endblock %}
+        <form method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="link-button">Sign out</button>
+        </form>
+      </nav>
+    {% endif %}
+  </header>
+  {% if messages %}
+    <ul class="flash" role="status">
+      {% for message in messages %}<li class="flash-{{ message.tags }}">{{ message }}</li>{% endfor %}
+    </ul>
+  {% endif %}
+  <main id="main" class="{% block main_class %}page{% endblock %}">
+    {% block content %}{% endblock %}
+  </main>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

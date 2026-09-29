@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Create account{% endblock %}
+{% block main_class %}page page-narrow{% endblock %}
+{% block content %}
+<section class="card auth-card">
+  <h1>Create an account</h1>
+  <p class="muted">You start with free demo credits to try every model.</p>
+  <form method="post" class="stack">
+    {% csrf_token %}
+    {% include "partials/form_fields.html" %}
+    <button type="submit" class="button button-primary">Create account</button>
+  </form>
+  <p class="muted">Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+</section>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block main_class %}page page-narrow{% endblock %}
+{% block content %}
+<section class="card auth-card">
+  <h1>Sign in</h1>
+  <p class="muted">Pay only for what you use. No subscription.</p>
+  <form method="post" class="stack">
+    {% csrf_token %}
+    {% include "partials/form_fields.html" %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button type="submit" class="button button-primary">Sign in</button>
+  </form>
+  <p class="muted">New here? <a href="{% url 'signup' %}">Create an account</a></p>
+</section>
+{% endblock %}

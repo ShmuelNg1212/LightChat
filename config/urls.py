@@ -1,8 +1,12 @@
 from django.contrib import admin
+from django.contrib.auth.decorators import login_not_required
 from django.http import HttpResponse
-from django.urls import path
+from django.urls import include, path
+
+from accounts.views import home
 
 
+@login_not_required
 def healthz(request):
     return HttpResponse("ok", content_type="text/plain")
 
@@ -10,4 +14,6 @@ def healthz(request):
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("healthz", healthz, name="healthz"),
+    path("accounts/", include("accounts.urls")),
+    path("", home, name="home"),
 ]
