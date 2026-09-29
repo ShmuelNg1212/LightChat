@@ -1,0 +1,70 @@
+# External dependencies
+
+Every exogenous input the project relies on, with its verification status.
+
+**Status key:** `documented` = read in official documentation · `sample-verified` = confirmed against a real response captured in `doc/fixtures/` · `assumed` = not yet verified (marked `ASSUMED` in code) · `needed` = not yet supplied.
+
+## BUILD LLM Proxy (`https://proxy.litechat.ai`)
+
+The designated upstream for all model calls. Docs: <https://proxy.litechat.ai/docs> (revision 2026-09-19, read 2026-09-29).
+
+**Important:** all three interfaces are served by **DeepSeek Flash**. The named models are interface labels; the docs say they "do not reproduce the named providers' model behavior."
+
+### Interfaces
+
+| Interface | Base URL | Endpoint | Model | Auth header | Status |
+|---|---|---|---|---|---|
+| OpenAI Chat Completions | `https://proxy.litechat.ai/openai/v1` | `POST /chat/completions` | `gpt-5.6-luna` | `Authorization: Bearer <OpenAI key>` | documented |
+| OpenAI Responses | `https://proxy.litechat.ai/openai/v1` | `POST /responses` | `gpt-5.6-luna` | same OpenAI key | documented (not used by the plan) |
+| Anthropic Messages | `https://proxy.litechat.ai/anthropic` | `POST /v1/messages` | `claude-haiku-4-5-20251001` | `x-api-key: <Anthropic key>` and `anthropic-version: 2023-06-01` | documented |
+| Google Gemini generateContent | `https://proxy.litechat.ai/google` | not read | `gemini-3.8-flash` | `x-goog-api-key: <Google key>` | **needed**: docs page timed out |
+
+All requests send JSON with `Content-Type: application/json`. `GET /v1/models` does not exist (404), so models cannot be discovered at runtime.
+
+### OpenAI Chat Completions (documented)
+
+- Request: `model`, `messages` (`system` / `user` / `assistant` roles), `max_tokens`, `reasoning_effort` (`"none"` disables reasoning). Also `tools` and `response_format`.
+- Response: text in `choices[0].message.content`. `finish_reason` is `stop` (normal), `length` (hit token limit) or `tool_calls`. Usage: `usage.prompt_tokens`, `usage.completion_tokens`, `usage.total_tokens`.
+- Streaming: `"stream": true`. SSE chunks carry `choices[].delta.content`. `stream_options.include_usage: true` adds usage chunks with empty `choices`. Ends with `[DONE]`; an error or interrupted stream is not success.
+
+### Anthropic Messages (documented)
+
+- Request: `model`, `messages` (`user` / `assistant`), separate top-level `system`, `max_tokens`, `thinking: {"type": "disabled"}`. Numeric thinking budgets are unsupported.
+- Response: `content` is a list of blocks; `text` blocks carry the answer. `stop_reason` is `end_turn` (normal), `max_tokens` (truncated) or `tool_use`. Usage: `usage.input_tokens`, `usage.output_tokens`.
+- Streaming: `"stream": true`. SSE with message and indexed content-block events; text arrives as `content_block_delta` with a `text_delta`. The message ends at `message_stop`; check the stop reason. A block ending is not the message ending.
+
+### OpenAI Responses (documented, not used)
+
+`input` + `instructions`, `max_output_tokens`, `reasoning: {"effort": "none"}`, `store: false`. `status` is `completed` / `incomplete` / `failed`. `previous_response_id`, stored responses, background mode, hosted search and code execution are unsupported. Streaming ends at `response.completed` / `response.incomplete` / `response.failed`, with no `[DONE]`.
+
+### Errors and reliability (documented)
+
+| Status | Meaning per docs |
+|---|---|
+| 400 | Correct the request |
+| 401 / 403 | Check the key, its provider and its expiry |
+| 429 | Reduce overlapping requests; use a bounded delay |
+| 502 / 504 | Upstream request failed |
+| 503 or persistent failure | Contact the administrator |
+
+- "Do not automatically retry after partial output arrives."
+- "Usage can be unknown after a failure."
+- Conversation history is kept by the app and resent on every turn.
+
+### Not published
+
+Prices, currency, billing rules and rate-limit numbers. The app therefore uses its own demo rate table (see the active plan).
+
+### Files (documented, not used yet)
+
+Image inputs and provider file APIs are available. Files are private per account and provider and expire after one hour. Limits: 64 MiB per file; 100 files and 256 MiB per account/provider. No audio or video generation.
+
+## Required secrets
+
+Needed in an untracked `.env`. They are not configured yet.
+
+| Variable | Purpose | Status |
+|---|---|---|
+| `BUILD_OPENAI_KEY` | OpenAI-interface key | needed |
+| `BUILD_ANTHROPIC_KEY` | Anthropic-interface key | needed |
+| `BUILD_GOOGLE_KEY` | Google-interface key (variable name is ours; the docs call it "YOUR_GOOGLE_KEY") | needed |
