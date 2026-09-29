@@ -3,7 +3,9 @@
 - **Date:** 2026-09-29 14:06
 - **Study:** [../study/2026-09-29-1357-lightchat-rebrand.md](../study/2026-09-29-1357-lightchat-rebrand.md)
 - **Design brief:** [../design/2026-09-29-1357-lightchat-identity-brief.md](../design/2026-09-29-1357-lightchat-identity-brief.md)
-- **Status:** awaiting-approval
+- **Status:** in-progress
+
+> **Approved 2026-09-29.** The Gardener replied "approved" to the study, brief and plan.
 
 Code-led. Nothing below starts before approval. Every task leaves the app working, with all tests passing.
 

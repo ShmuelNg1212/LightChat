@@ -1,7 +1,7 @@
 # Design brief: LightChat identity, "Prepaid Meter"
 
 - **Date:** 2026-09-29 13:57
-- **Status:** proposed, awaiting the Gardener's approval (with the [study](../study/2026-09-29-1357-lightchat-rebrand.md) and [plan](../plan/2026-09-29-1406-lightchat-rebrand.md))
+- **Status:** approved 2026-09-29 (with the [study](../study/2026-09-29-1357-lightchat-rebrand.md) and [plan](../plan/2026-09-29-1406-lightchat-rebrand.md))
 - **Product truth:** [PRODUCT.md](../../PRODUCT.md). This brief adds no product facts.
 - **Method:** Impeccable 4.4.0 `init` → `shape` → new-work direction flow (concept seed `00ad6455`, mode *operate*). The aesthetic decision was delegated to the Vine.
 

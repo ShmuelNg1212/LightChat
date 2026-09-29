@@ -2,7 +2,7 @@
 
 - **Date:** 2026-09-29 13:57
 - **Request:** Initialize Impeccable, rebrand the product as **LightChat**, and develop its design direction including a minimalist logo. Complete Study and Plan together, then pause for approval before implementing the interface or applying the rebrand. The aesthetic decision is delegated to the Vine. Preserve approved product decisions and working functionality.
-- **Status:** awaiting-approval (together with the [plan](../plan/2026-09-29-1406-lightchat-rebrand.md) and the [design brief](../design/2026-09-29-1357-lightchat-identity-brief.md))
+- **Status:** approved 2026-09-29 (together with the [plan](../plan/2026-09-29-1406-lightchat-rebrand.md) and the [design brief](../design/2026-09-29-1357-lightchat-identity-brief.md))
 
 ## Intended Outcome
 
