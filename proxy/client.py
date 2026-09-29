@@ -22,7 +22,7 @@ log = logging.getLogger("litechat.proxy")
 
 TIMEOUT = httpx.Timeout(connect=5.0, read=90.0, write=10.0, pool=10.0)
 CONNECT_RETRIES = 3  # connection attempts only; see module docstring
-MAX_DURATION = 300.0  # seconds for a whole reply
+MAX_DURATION = 20 * 60.0  # seconds for a whole reply; a 25,000-token reply needs >= ~21 tokens/s
 
 # Status codes returned before generation starts, so nothing was billed.
 REJECTIONS = {

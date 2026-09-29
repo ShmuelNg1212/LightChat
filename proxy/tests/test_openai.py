@@ -117,3 +117,23 @@ class OpenAIAdapterTests(SimpleTestCase):
         with self.assertRaises(ProxyError) as ctx:
             run()
         self.assertEqual((ctx.exception.kind, ctx.exception.nothing_generated), ("not_configured", True))
+
+
+@override_settings(PROXY_KEYS=KEYS, PROXY_BASE_URL="https://proxy.test")
+class DurationLimitTests(SimpleTestCase):
+    def run_with_clock(self, *elapsed):
+        from unittest import mock
+
+        ticks = iter([0.0, *elapsed])
+        with mock.patch("proxy.client.time.monotonic", side_effect=lambda: next(ticks)):
+            with FakeProxy(sse(chunk("a"), chunk("b"), chunk(None, "stop"), USAGE, "[DONE]")):
+                return run()
+
+    def test_long_reply_under_twenty_minutes_completes(self):
+        events = self.run_with_clock(19 * 60, 19 * 60 + 30, 19 * 60 + 40)
+        self.assertEqual(events[-1].finish, Finish.COMPLETE)
+
+    def test_reply_over_twenty_minutes_is_stopped(self):
+        with self.assertRaises(ProxyError) as ctx:
+            self.run_with_clock(20 * 60 + 1)
+        self.assertEqual((ctx.exception.kind, ctx.exception.nothing_generated), ("timeout", False))
