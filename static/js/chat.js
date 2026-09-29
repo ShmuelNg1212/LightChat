@@ -378,5 +378,6 @@
 
   showPrice();
   autosize();
-  scrollToBottom();
+  // Open a chat at its latest message; a new chat starts at the top so its heading and steps are read first.
+  if (!document.getElementById("empty-state")) scrollToBottom();
 })();
