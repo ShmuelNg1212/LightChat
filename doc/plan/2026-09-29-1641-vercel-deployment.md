@@ -1,7 +1,7 @@
 # Plan: Deploy LightChat to Vercel
 - **Date:** 2026-09-29 16:41
 - **Study:** [../study/2026-09-29-1641-vercel-deployment.md](../study/2026-09-29-1641-vercel-deployment.md)
-- **Status:** blocked
+- **Status:** awaiting-sync
 
 The Gardener asked for the Study and Plan together, so both are approved in one step.
 
@@ -30,7 +30,7 @@ The Gardener asked for the Study and Plan together, so both are approved in one 
 
 ### B. Preview (needs the Gardener's logins and clicks)
 - [x] 8. Create and link the Vercel project with `npx vercel@latest link`. No deploy yet, no Git auto-deploys
-- [ ] 9. ⏸ **Gardener:** add Neon (Free, Frankfurt, Production and Preview, Preview branching on) and turn on the automation bypass secret
+- [x] 9. ⏸ **Gardener:** add Neon (Free, Frankfurt, Production and Preview, Preview branching on) and turn on the automation bypass secret
 - [x] 10. Set the env vars for Production and Preview:
   - `SECRET_KEY`: random, different per environment;
   - the three proxy keys, piped from `.env`;
@@ -39,8 +39,8 @@ The Gardener asked for the Study and Plan together, so both are approved in one 
   - `DB_CONN_MAX_AGE=0`.
 
   No commit; nothing in Git
-- [ ] 11. `vercel deploy` (**preview only**). Check the build log: migrations applied, `collectstatic` ran, Python 3.14
-- [ ] 12. Run the scripted preview smoke test (a local script in the scratchpad, not committed; it calls the metered proxy). It checks:
+- [x] 11. `vercel deploy` (**preview only**). Check the build log: migrations applied, `collectstatic` ran, Python 3.14
+- [x] 12. Run the scripted preview smoke test (a local script in the scratchpad, not committed; it calls the metered proxy). It checks:
   - health;
   - `Secure` cookies and HSTS;
   - sign-up with 5.00 credits, then sign-in;
@@ -52,13 +52,13 @@ The Gardener asked for the Study and Plan together, so both are approved in one 
   - a static CSS file and a font load from the CDN;
   - `.env` and `db.sqlite3` are not served;
   - one long reply (~3,000 tokens, 1 paid call) to check streaming past 20 s.
-- [ ] 13. Check the mobile layout at 360 px and 390 px with a headless browser (Playwright through npx, local, free), plus the drawer
-- [ ] 14. Set plan `Status: awaiting-rendezvous`. ⏸ **Rendezvous 1:** preview URL, results and open issues
+- [x] 13. Check the mobile layout at 360 px and 390 px with a headless browser (Playwright through npx, local, free), plus the drawer
+- [x] 14. Set plan `Status: awaiting-rendezvous`. ⏸ **Rendezvous 1:** preview URL, results and open issues
 ### C. Production (only after acceptance)
-- [ ] 15. `vercel deploy --prod` from the accepted commit. The production build migrates the production Neon database
+- [x] 15. `vercel deploy --prod` from the accepted commit. The production build migrates the production Neon database
 - [ ] 16. ⏸ **Gardener:** `createsuperuser` against production (I give you the exact command)
-- [ ] 17. Production smoke test: health, sign-up, one short reply (1 paid call), persistence
-- [ ] 18. Set plan `Status: awaiting-rendezvous`. ⏸ **Rendezvous 2:** the live URL
+- [x] 17. Production smoke test: health, sign-up, one short reply (1 paid call), persistence
+- [x] 18. Set plan `Status: awaiting-rendezvous`. ⏸ **Rendezvous 2:** the live URL
 - [ ] 19. Sync:
   - add `doc/wiki/deployment.md` (setup, env vars, deploying, migrations, rollback, reconciliation, limits);
   - update setup, architecture, external-dependencies and README.
@@ -89,3 +89,12 @@ The Gardener asked for the Study and Plan together, so both are approved in one 
   - A private bootstrap production deployment lets later `vercel deploy` runs create real previews.
   - **Rendezvous 1 is waived:** if every preview test passes, go live without pausing. That means deploying production and restoring **Standard Protection**, which makes the production domain public. Any failure stops the go-live and is reported.
 - The CLI's permission classifier blocked the bootstrap `vercel deploy --prod`. The Gardener has to run it or allow it.
+- Task 9 (Gardener): Neon Free was connected to Production and Preview, and the automation bypass secret was turned on.
+- Task 15 was run by the Gardener: the bootstrap `vercel deploy --prod` built `ce1e0fe`. The preview (`lightchat-dyd1wc615-…`) was built from the **same commit**, so after the preview passed, going live only needed Deployment Protection restored to Standard (`all_except_custom_domains`), with no second production build. `https://lightchat-five.vercel.app` is now public, and preview and deployment URLs still need a Vercel login.
+- **Neon preview branching did not happen for CLI deploys.** The preview deployment got no branch-specific `DATABASE_URL`, so **preview and production share one database.** The preview build reported "No migrations to apply". Test data now in production: the users `smoke7bceb75b` (one Stop-test reply left `needs_reconciliation`, with its hold kept), `smoke0f61ad88`, and one `mobile…` account from the phone check. Every other user is a real sign-up.
+- Preview results: smoke test **36/36**, phone checks **17/17**. The three models, the charges and ledger, the double-send check, Stop, saved chats, secure cookies, HSTS, the HTTP→HTTPS redirect, static files from the CDN, secret files not served, and no key in any response.
+  - Streaming: 2,401 deltas over 16.9 s for a ~2,000-word reply. First byte in about 0.3 s, first token in about 1 s.
+  - The long reply finished in 17.9 s, so streaming past 20 s wasn't observed. Incremental delivery is proven, and the 300 s limit is untested in practice.
+- Production results: **28/28** (one paid reply).
+- Paid proxy calls: 7 (5 short, 1 stopped, 1 long, about 3,000 output tokens) plus 2 short on production.
+- Task 16 is still open: the Gardener runs `createsuperuser` against production (steps in `doc/wiki/deployment.md`).
