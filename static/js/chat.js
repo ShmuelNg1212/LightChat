@@ -121,27 +121,33 @@
   function pendingReply() {
     const article = el("article", "msg msg-assistant");
     article.dataset.status = "streaming";
-    const content = el("div", "content streaming");
-    const typing = el("div", "typing");
-    typing.setAttribute("aria-hidden", "true");
-    typing.append(el("span"), el("span"), el("span"));
-    content.appendChild(typing);
-    const meta = el("div", "msg-meta");
-    meta.appendChild(el("span", "model", modelSelect.selectedOptions[0].textContent));
-    article.append(content, meta);
-    return { article, content, typing, meta };
+    const content = el("div", "content streaming is-waiting", "Waiting for the first words…");
+    const reading = el("p", "reading");
+    reading.appendChild(el("span", "reading-model", modelSelect.selectedOptions[0].textContent));
+    article.append(content, reading);
+    return { article, content, reading };
   }
 
-  function showRejection(article, message, url) {
+  function holding(reserved) {
+    const state = el("span", "reading-state is-held");
+    const light = el("span", "pulse-light is-live");
+    light.setAttribute("aria-hidden", "true");
+    const amount = el("strong", "", reserved);
+    state.append(light, document.createTextNode("Holding up to "), amount, document.createTextNode(" credits"));
+    return state;
+  }
+
+  function showRejection(article, message, url, code) {
     article.replaceChildren();
-    const box = el("div", "msg-error");
-    box.append(el("strong", "", "Not sent. "), document.createTextNode(message + " "));
+    article.dataset.status = "rejected";
+    const box = el("p", "reading-note is-danger");
+    box.append(el("strong", "", "Not sent."), document.createTextNode(" " + message + " "));
     if (url) {
       const link = el("a", "", "Open the chat");
       link.href = url;
       box.appendChild(link);
     }
-    if (/credit/i.test(message)) {
+    if (code === "insufficient_credit") {
       const link = el("a", "", "Add demo credits");
       link.href = form.dataset.creditsUrl;
       box.appendChild(link);
@@ -197,7 +203,7 @@
       let data = {};
       try { data = await response.json(); } catch (_) { /* not JSON */ }
       const error = data.error || { message: "Something went wrong. Try again." };
-      showRejection(reply.article, error.message, error.url);
+      showRejection(reply.article, error.message, error.url, error.code);
       if (userBubble && error.code !== "duplicate") {
         userBubble.remove();
         textarea.value = prompt || "";
@@ -224,11 +230,11 @@
         cancelUrl = event.cancel_url;
         stopButton.hidden = false;
         if (userBubble && event.user_message) userBubble.dataset.message = event.user_message;
-        reply.meta.append(el("span", "num", "Up to " + event.reserved + " credits held"), el("span", "tag tag-held", "Estimate"));
+        reply.reading.appendChild(holding(event.reserved));
         setBalance(event);
       } else if (event.type === "delta") {
         const follow = nearBottom();
-        if (reply.typing.isConnected) reply.typing.remove();
+        if (!received) reply.content.classList.remove("is-waiting");
         received += event.text;
         reply.content.textContent = received;
         if (follow) scrollToBottom();
@@ -263,7 +269,7 @@
       // The stream broke before the server finished. Never present it as complete.
       reply.article.dataset.status = "needs_reconciliation";
       reply.content.classList.remove("streaming");
-      const warn = el("div", "msg-warn", stopping
+      const warn = el("p", "reading-note", stopping
         ? "Stopped. Reload the page to see what was saved and any credit held for review."
         : "The connection dropped before this reply finished. Reload the page to see its final state.");
       reply.article.appendChild(warn);

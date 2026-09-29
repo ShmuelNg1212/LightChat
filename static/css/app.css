@@ -343,33 +343,28 @@ body.chat-body { overflow: hidden; }
 }
 .msg-assistant .content { overflow-wrap: anywhere; }
 .msg-assistant .content.streaming { white-space: pre-wrap; }
-.msg-meta {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px;
-  margin-top: 6px; color: var(--muted); font-size: 0.8rem;
-}
-.msg-meta .model { font-weight: 600; color: var(--text); }
-.tag {
-  display: inline-block; padding: 1px 7px; border-radius: 999px;
-  font-size: 0.75rem; background: var(--surface-2); color: var(--muted);
-}
-.tag-held { background: var(--warn-soft); color: var(--warn); }
-.tag-error { background: var(--danger-soft); color: var(--danger); }
-.msg-error {
-  margin-top: 6px; padding: 10px 12px; border-radius: var(--radius-sm);
-  background: var(--danger-soft); color: var(--text); font-size: 0.9rem;
-}
-.msg-error strong { color: var(--danger); }
-.msg-warn {
-  margin-top: 6px; padding: 8px 12px; border-radius: var(--radius-sm);
-  background: var(--warn-soft); font-size: 0.875rem;
-}
+.msg-assistant .content.streaming { white-space: pre-wrap; }
+.content.is-waiting { color: var(--muted); font-style: italic; }
 
-.typing { display: inline-flex; gap: 4px; padding: 6px 0; }
-.typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: blink 1.2s infinite; }
-.typing span:nth-child(2) { animation-delay: 0.2s; }
-.typing span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes blink { 0%, 80%, 100% { opacity: 0.25; } 40% { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .typing span { animation: none; opacity: 0.6; } }
+/* The reading line: printed under every reply. States are words, never colour alone. */
+.reading {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-1) 0;
+  margin: var(--space-3) 0 0; padding-top: var(--space-2); border-top: 1px solid var(--line);
+  font: 500 0.9rem/1.4 var(--font-meter); font-variant-numeric: tabular-nums lining-nums;
+  color: var(--muted); letter-spacing: 0.01em;
+}
+.reading > * { padding: 0 var(--space-3); }
+.reading > :first-child { padding-left: 0; }
+.reading > * + * { border-left: 1px solid var(--line); }
+.reading-model { color: var(--ink); font-weight: 600; }
+.reading strong { color: var(--ink); font-weight: 600; }
+.reading-state.is-held, .reading-state.is-held strong { color: var(--pulse); }
+.reading-state { display: inline-flex; align-items: center; gap: 6px; }
+.reading-note {
+  margin: var(--space-2) 0 0; font-size: 0.9375rem; line-height: 1.5; color: var(--ink); max-width: var(--measure);
+}
+.reading-note.is-danger > strong:first-child { color: var(--danger); }
+.reading-note .link-button { margin-left: var(--space-1); font-weight: 600; }
 
 /* Rendered answers: Public Sans 17/1.65, headings that step down gently */
 .msg-assistant .content { line-height: 1.65; overflow-wrap: break-word; hyphens: auto; }

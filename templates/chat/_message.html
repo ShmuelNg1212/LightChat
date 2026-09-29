@@ -5,44 +5,41 @@
 <article class="msg msg-assistant" data-message="{{ m.pk }}"{% if gen %} data-status="{{ gen.status }}"{% endif %}>
   {% if m.content %}<div class="content">{{ m.content|markdown }}</div>{% endif %}
   {% if gen %}
-  <div class="msg-meta">
-    <span class="model">{{ gen.model_label }}</span>
+  {# The reading: what this reply used and cost, printed under it like a meter reading. #}
+  <p class="reading">
+    <span class="reading-model">{{ gen.model_label }}</span>
     {% if gen.status == "completed" %}
-      <span class="num">{{ gen.input_tokens }} in · {{ gen.output_tokens }} out tokens</span>
-      <span class="num" title="Charged at {{ gen.input_rate|credits:2 }} / {{ gen.output_rate|credits:2 }} credits per 1M input / output tokens">{{ gen.charged|credits }} credits</span>
-      <span class="tag">Charged</span>
+      <span class="reading-tokens">{{ gen.input_tokens|floatformat:"0g" }} in · {{ gen.output_tokens|floatformat:"0g" }} out tokens</span>
+      <span class="reading-cost" title="At {{ gen.input_rate|credits:2 }} in / {{ gen.output_rate|credits:2 }} out credits per 1M tokens"><strong>{{ gen.charged|credits }}</strong> credits charged</span>
     {% elif gen.status == "reconciled" %}
-      <span class="num">{{ gen.charged|credits }} credits</span>
-      <span class="tag">Reviewed</span>
+      <span class="reading-cost"><strong>{{ gen.charged|credits }}</strong> credits charged after review</span>
     {% elif gen.status == "failed" %}
-      <span class="tag">Not charged</span>
+      <span class="reading-state">Not charged</span>
     {% elif gen.status == "needs_reconciliation" %}
-      <span class="num">Up to {{ gen.reserved|credits }} credits held</span>
-      <span class="tag tag-held">Under review</span>
+      <span class="reading-state is-held"><span class="pulse-light" aria-hidden="true"></span>Under review · up to <strong>{{ gen.reserved|credits }}</strong> credits held</span>
     {% else %}
-      <span class="num">Up to {{ gen.reserved|credits }} credits held</span>
-      <span class="tag tag-held">In progress</span>
+      <span class="reading-state is-held"><span class="pulse-light is-live" aria-hidden="true"></span>Holding up to <strong>{{ gen.reserved|credits }}</strong> credits</span>
     {% endif %}
-  </div>
+  </p>
   {% if gen.finish_reason == "length" %}
-    <div class="msg-warn">This reply hit the {{ gen.max_output_tokens|floatformat:"0g" }}-token limit and was cut off. Ask it to continue.</div>
+    <p class="reading-note">This reply reached the {{ gen.max_output_tokens|floatformat:"0g" }}-token limit and was cut off. Ask it to continue.</p>
   {% elif gen.finish_reason == "filtered" %}
-    <div class="msg-warn">The model's safety filter stopped this reply.</div>
+    <p class="reading-note">The model's safety filter stopped this reply.</p>
   {% endif %}
   {% if gen.status == "failed" %}
-    <div class="msg-error" role="alert">
+    <p class="reading-note is-danger">
       <strong>No reply.</strong> {{ gen.error_message }} You were not charged.
-      {% if gen.user_message_id == latest_user_id %}<button type="button" class="button button-small" data-retry="{{ gen.user_message_id }}">Retry</button>{% endif %}
-    </div>
+      {% if gen.user_message_id == latest_user_id %}<button type="button" class="link-button" data-retry="{{ gen.user_message_id }}">Retry</button>{% endif %}
+    </p>
   {% elif gen.status == "needs_reconciliation" %}
-    <div class="msg-warn">
+    <p class="reading-note">
       <strong>{% if gen.error_kind == "cancelled" %}Stopped.{% else %}This reply didn't finish.{% endif %}</strong>
       {% if gen.error_kind != "cancelled" and gen.error_kind != "interrupted" %}{{ gen.error_message }}{% endif %}
-      The model service may have charged for part of it, so up to {{ gen.reserved|credits }} credits stay held until it's reviewed. Anything not owed is returned.
-      {% if gen.user_message_id == latest_user_id %}<button type="button" class="button button-small" data-retry="{{ gen.user_message_id }}">Retry</button>{% endif %}
-    </div>
+      The model service may have charged for part of it, so up to {{ gen.reserved|credits }} credits stay held while the cost is checked. Anything unused comes back.
+      {% if gen.user_message_id == latest_user_id %}<button type="button" class="link-button" data-retry="{{ gen.user_message_id }}">Retry</button>{% endif %}
+    </p>
   {% elif gen.status == "reconciled" and gen.resolution %}
-    <div class="msg-meta">Review: {{ gen.resolution }}</div>
+    <p class="reading-note">Review: {{ gen.resolution }}</p>
   {% endif %}
   {% endif %}
 </article>

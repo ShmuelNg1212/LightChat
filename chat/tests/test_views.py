@@ -107,8 +107,7 @@ class MessageDisplayTests(TestCase):
         page = self.client.get(reverse("conversation", args=[Conversation.objects.get().pk]))
         self.assertContains(page, "GPT-5.6 Luna · OpenAI interface")
         self.assertContains(page, "100 in · 50 out tokens")
-        self.assertContains(page, "0.0015 credits")  # 100*5 + 50*20 = 1500 µcr
-        self.assertContains(page, "Charged")
+        self.assertContains(page, "<strong>0.0015</strong> credits charged")  # 100*5 + 50*20 = 1500 µcr
 
     def test_start_event_reports_hold_estimate(self):
         events = self.send(openai_reply("Hi"))
