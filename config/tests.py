@@ -78,9 +78,26 @@ class DeploymentSettingsTests(SimpleTestCase):
             "VERCEL": "1",
             "VERCEL_URL": "lightchat-abc123.vercel.app",
             "SECRET_KEY": "test-" + "k7Qz9xW2pL" * 6,
+            "DATABASE_URL": "postgres://u:p@db.example.com:5432/app",
         }
         result = subprocess.run(
             [sys.executable, "manage.py", "check", "--deploy", "--fail-level", "WARNING"],
             cwd=settings.BASE_DIR, env=environ, capture_output=True, text=True,
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_vercel_refuses_to_start_without_a_database_url(self):
+        import os
+        import subprocess
+        import sys
+
+        from django.conf import settings
+
+        environ = {k: v for k, v in os.environ.items() if k != "DATABASE_URL"}
+        environ.update(DEBUG="False", VERCEL="1", SECRET_KEY="x" * 60)
+        result = subprocess.run(
+            [sys.executable, "-c", "import django, os; os.environ['DJANGO_SETTINGS_MODULE']='config.settings'; django.setup()"],
+            cwd=settings.BASE_DIR, env=environ, capture_output=True, text=True,
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Set DATABASE_URL", result.stderr)

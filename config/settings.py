@@ -118,6 +118,9 @@ DATABASES = {
         conn_max_age=env.int("DB_CONN_MAX_AGE", default=60),
     )
 }
+if os.environ.get("VERCEL") and "DATABASE_URL" not in os.environ:
+    # Vercel's filesystem is not persistent: SQLite there would lose every account.
+    raise ImproperlyConfigured("Set DATABASE_URL (Neon Postgres) for Vercel deployments.")
 if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
     DATABASES["default"]["TEST"] = {"NAME": BASE_DIR / "test_db.sqlite3"}
 
