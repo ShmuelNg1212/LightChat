@@ -1,9 +1,9 @@
-{% if m.role == "user" %}
+{% load chat_tags %}{% if m.role == "user" %}
 <div class="msg msg-user" data-message="{{ m.pk }}"><div class="bubble">{{ m.content }}</div></div>
 {% else %}
 {% with gen=g|default:m.generation %}
 <article class="msg msg-assistant" data-message="{{ m.pk }}"{% if gen %} data-status="{{ gen.status }}"{% endif %}>
-  <div class="content">{{ m.content|linebreaks }}</div>
+  <div class="content">{{ m.content|markdown }}</div>
 </article>
 {% endwith %}
 {% endif %}
