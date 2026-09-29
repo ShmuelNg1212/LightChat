@@ -153,7 +153,7 @@ def start(
                 raise SendRejected(
                     "insufficient_credit",
                     f"Not enough credit: this reply could cost up to {format_credits(exc.needed)} credits "
-                    f"and you have {format_credits(max(exc.available, 0))}. Add demo credits to continue.",
+                    f"and you have {format_credits(max(exc.available, 0))}.",
                     needed=exc.needed,
                     available=exc.available,
                 )

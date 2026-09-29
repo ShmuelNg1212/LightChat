@@ -128,7 +128,7 @@ class MessageDisplayTests(TestCase):
     def test_disclosure_and_prices_visible(self):
         page = self.client.get(reverse("home"))
         self.assertContains(page, "answered by DeepSeek Flash")
-        self.assertContains(page, "In 5.00 · Out 20.00 credits per 1M tokens")
+        self.assertContains(page, "5.00 in · 20.00 out, credits per million tokens")
         credits = self.client.get(reverse("credits"))
         self.assertContains(credits, "Models and prices")
         self.assertContains(credits, "Claude Haiku 4.5 · Anthropic interface")
@@ -138,7 +138,7 @@ class MessageDisplayTests(TestCase):
         with FakeProxy('{"error": {}}', status=429):
             events = read_events(self.client.post(reverse("send"), json.dumps(payload), content_type="application/json"))
         html = events[-1]["html"]
-        self.assertIn("You were not charged", html)
+        self.assertIn("Not charged", html)
         self.assertIn("busy", html)
         self.assertIn("data-retry", html)
 
@@ -148,7 +148,7 @@ class MessageDisplayTests(TestCase):
         self.assertEqual(retry[-1]["status"], "completed")
         page = self.client.get(reverse("conversation", args=[convo.pk]))
         self.assertContains(page, "Recovered")
-        self.assertNotContains(page, "You were not charged")
+        self.assertNotContains(page, "Not charged")
         self.assertEqual(convo.messages.filter(role="user").count(), 1)
 
     def test_truncated_reply_is_labelled(self):
@@ -162,7 +162,7 @@ class MessageDisplayTests(TestCase):
         convo = Conversation.objects.get()
         self.send(openai_reply("OK"), prompt="Second", conversation=convo.pk)
         page = self.client.get(reverse("conversation", args=[convo.pk]))
-        self.assertContains(page, "You were not charged")
+        self.assertContains(page, "Not charged")
         self.assertNotContains(page, "data-retry")
 
     def test_new_chat_gets_its_header_immediately(self):

@@ -28,14 +28,14 @@
   {% endif %}
   {% if gen.status == "failed" %}
     <p class="reading-note is-danger">
-      <strong>No reply.</strong> {{ gen.error_message }} You were not charged.
+      <strong>No reply.</strong> {{ gen.error_message }}
       {% if gen.user_message_id == latest_user_id %}<button type="button" class="link-button" data-retry="{{ gen.user_message_id }}">Retry</button>{% endif %}
     </p>
   {% elif gen.status == "needs_reconciliation" %}
     <p class="reading-note">
       <strong>{% if gen.error_kind == "cancelled" %}Stopped.{% else %}This reply didn't finish.{% endif %}</strong>
       {% if gen.error_kind != "cancelled" and gen.error_kind != "interrupted" %}{{ gen.error_message }}{% endif %}
-      The model service may have charged for part of it, so up to {{ gen.reserved|credits }} credits stay held while the cost is checked. Anything unused comes back.
+      The model service may have charged for part of it, so that credit stays on hold while the cost is checked. Anything unused comes back.
       {% if gen.user_message_id == latest_user_id %}<button type="button" class="link-button" data-retry="{{ gen.user_message_id }}">Retry</button>{% endif %}
     </p>
   {% elif gen.status == "reconciled" and gen.resolution %}

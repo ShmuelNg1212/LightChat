@@ -50,7 +50,7 @@
   const example = document.getElementById("model-example");
   const showPrice = () => {
     const option = modelSelect.selectedOptions[0];
-    rate.textContent = option.dataset.price + ".";
+    rate.textContent = "Price: " + option.dataset.price + ".";
     example.textContent = option.dataset.example;
   };
   modelSelect.addEventListener("change", showPrice);
