@@ -73,6 +73,18 @@ Fonts are self-hosted from `static/fonts/` (sources and licences in its README).
 | `manage.py probe_proxy [--provider P] [--bad-key] [--max-tokens N] [--no-save]` | Makes one tiny streamed request per configured interface. Rewrites the redacted fixtures in `doc/fixtures/proxy/` unless `--no-save` is given (use that to check a setting such as a new output limit) | **Paid**: about 190 tokens per interface |
 | `manage.py reconcile_stale_generations [--minutes 10]` | Flags replies stuck "in progress" (e.g. after a server restart) for admin review | Free |
 
+## Assessment submission package
+
+`python tools/package_submission.py --scratch <session scratchpad> --impeccable-license submission/inputs/impeccable-LICENSE` builds the local assessment package in `submission/` (gitignored; never committed or uploaded). It:
+- copies the raw session transcripts, rules, skills, journal, a source snapshot of HEAD, evidence and git history;
+- redacts the author email and the throwaway test passwords (listed in the gitignored `submission/inputs/redact-test-passwords.txt`);
+- writes a manifest with SHA-256 checksums;
+- runs the test suite;
+- scans the result for `.env` values, the email, passwords, databases and dependency folders, aborting on any hit;
+- zips the package.
+
+The assessor README and `SKILLS-USED.md` are inputs kept only in `submission/inputs/`. The script uses only the standard library.
+
 ## Not yet set up
 
 - Deployment. `check --deploy` still reports HSTS, SSL redirect, secure session and CSRF cookies, and a development-only email backend. A production server (e.g. gunicorn with threads) and static-file serving are not configured.

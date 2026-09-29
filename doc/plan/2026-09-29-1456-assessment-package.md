@@ -2,7 +2,7 @@
 
 - **Date:** 2026-09-29 14:56
 - **Study:** [../study/2026-09-29-1456-assessment-package.md](../study/2026-09-29-1456-assessment-package.md)
-- **Status:** awaiting-rendezvous
+- **Status:** done
 
 > **Approved 2026-09-29, with changes from the Gardener:**
 > - Transcripts go in as **raw JSONL**. The derived `readable/` renderings are dropped. Only the required minimal redactions (email, test passwords) are applied to the copies.
@@ -64,6 +64,10 @@ Excluded entirely: `.env`, all `*.sqlite3` databases, `.venv/`, `node_modules/`,
 
   Set Status to `awaiting-rendezvous`. → `docs(plan): mark assessment-package ready for rendezvous`
 - [ ] **After acceptance (Sync):** add the packaging command to `doc/wiki/setup.md`, and mark the plan done. → `docs(wiki): sync after assessment-package`
+
+## Outcome
+
+Accepted by the Gardener on 2026-09-29 ("accept"). The accepted ZIP is `submission/lightchat-assessment-package-2026-09-29.zip` (19.4 MB), built at commit `7d68dab`. The Sync commit after it touches only the wiki and this plan; the package was not rebuilt.
 
 ## Execution notes
 

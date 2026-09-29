@@ -14,7 +14,7 @@ Working agreement: [AGENTS.md](../../AGENTS.md), mirrored in [CLAUDE.md](../../C
 
 | Page | Contents |
 |---|---|
-| [setup.md](setup.md) | Install, `.env` keys, run, test, design checks, operational commands |
+| [setup.md](setup.md) | Install, `.env` keys, run, test, design checks, operational commands, the assessment package |
 | [architecture.md](architecture.md) | Apps, data model, the metered send flow, money and concurrency rules, front end, security |
 | [features.md](features.md) | What users and admins can do today, and how failures are handled |
 | [external-dependencies.md](external-dependencies.md) | BUILD LLM Proxy contract (sample-verified), connectivity notes, required keys |
@@ -51,4 +51,4 @@ A test (`chat/tests/test_branding.py`) fails if "Litechat" appears on any user-f
 | Litechat core functionality | [study](../study/2026-09-29-1243-litechat-core.md) | [plan](../plan/2026-09-29-1258-litechat-core.md) | Done (accepted 2026-09-29) |
 | Longer replies and more starting credit | [study](../study/2026-09-29-1347-reply-limit-and-starting-credit.md) | [plan](../plan/2026-09-29-1348-reply-limit-and-starting-credit.md) | Done (accepted 2026-09-29) |
 | LightChat rebrand (slice 1) | [study](../study/2026-09-29-1357-lightchat-rebrand.md) | [plan](../plan/2026-09-29-1406-lightchat-rebrand.md) · [brief](../design/2026-09-29-1357-lightchat-identity-brief.md) | Done (accepted 2026-09-29) |
-| Assessment submission package | [study](../study/2026-09-29-1456-assessment-package.md) | [plan](../plan/2026-09-29-1456-assessment-package.md) | Awaiting rendezvous |
+| Assessment submission package | [study](../study/2026-09-29-1456-assessment-package.md) | [plan](../plan/2026-09-29-1456-assessment-package.md) | Done (accepted 2026-09-29) |
