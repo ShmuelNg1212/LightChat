@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "static/css/app.css"
+        ],
+        "createdAt": "2026-09-29T05:36:47.072Z",
+        "reason": "Claude triage: L288 is the Markdown blockquote rule (.content blockquote), a neutral 3px var(--border) quote rule, not an accent-colored card"
+      }
+    ]
+  }
+}
