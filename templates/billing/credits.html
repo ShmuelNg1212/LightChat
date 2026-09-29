@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load credits %}
+{% block title %}Credits{% endblock %}
+{% block content %}
+<p><a href="{% url 'home' %}">← Back to chats</a></p>
+<h1>Credits</h1>
+<p class="notice"><strong>Demo credits, not real money.</strong> They let you try the pay-as-you-go flow. No payment is taken and they have no cash value.</p>
+
+<div class="stat-row">
+  <div class="stat"><div class="label">Available to spend</div><div class="value">{{ wallet.available|credits }}</div></div>
+  <div class="stat"><div class="label">Held for replies in progress or under review</div><div class="value">{{ wallet.held|credits }}</div></div>
+</div>
+
+<form method="post" action="{% url 'topup' %}">
+  {% csrf_token %}
+  <button type="submit" class="button button-primary" {% if not can_topup %}disabled aria-describedby="topup-help"{% endif %}>
+    Add {{ topup_amount|credits:2 }} demo credits
+  </button>
+  <p class="muted small" id="topup-help">Demo top-ups are free and stop at {{ topup_max|credits:2 }} available credits.</p>
+</form>
+
+<h2>History</h2>
+{% if page.object_list %}
+<div class="table-scroll">
+<table class="data">
+  <thead><tr><th>When</th><th>What</th><th class="num">Change</th><th class="num">Available after</th></tr></thead>
+  <tbody>
+  {% for entry in page.object_list %}
+    <tr>
+      <td class="nowrap">{{ entry.created_at|date:"M j, H:i" }}</td>
+      <td>{{ entry.get_kind_display }}{% if entry.memo %}<div class="muted small">{{ entry.memo }}</div>{% endif %}</td>
+      <td class="num">
+        {% if entry.amount %}{% if entry.amount > 0 %}+{% endif %}{{ entry.amount|credits }}{% endif %}
+        {% if entry.held_delta %}<div class="muted small">{% if entry.held_delta > 0 %}held {{ entry.held_delta|credits }}{% else %}released {{ entry.held_delta|abs_credits }}{% endif %}</div>{% endif %}
+      </td>
+      <td class="num">{{ entry.available_after|credits }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% if page.has_other_pages %}
+<p>{% if page.has_previous %}<a href="?page={{ page.previous_page_number }}">Newer</a>{% endif %}
+   {% if page.has_next %}<a href="?page={{ page.next_page_number }}">Older</a>{% endif %}</p>
+{% endif %}
+{% else %}
+<p class="muted">No activity yet.</p>
+{% endif %}
+{% endblock %}

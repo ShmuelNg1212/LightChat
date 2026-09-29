@@ -1,6 +1,9 @@
+from django.conf import settings
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_not_required
 from django.shortcuts import redirect, render
+
+from billing import services as billing
 
 from .forms import SignUpForm
 
@@ -13,6 +16,7 @@ def signup(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
+            billing.grant(user, settings.SIGNUP_GRANT_MICRO, memo="Welcome credits")
             login(request, user)
             return redirect("home")
     else:

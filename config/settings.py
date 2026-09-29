@@ -75,6 +75,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "billing.context_processors.wallet",
             ],
         },
     },
@@ -164,3 +165,8 @@ LOGGING = {
         "litechat": {"handlers": ["console"], "level": env("LOG_LEVEL", default="INFO")},
     },
 }
+
+# Demo credits (integer micro-credits; 1 credit = 1,000,000). Not real money.
+SIGNUP_GRANT_MICRO = 1_000_000
+TOPUP_AMOUNT_MICRO = 1_000_000
+TOPUP_MAX_AVAILABLE_MICRO = 5_000_000

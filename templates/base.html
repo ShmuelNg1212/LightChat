@@ -1,4 +1,4 @@
-{% load static %}<!doctype html>
+{% load static credits %}<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -15,6 +15,9 @@
     {% if user.is_authenticated %}
       <nav class="topnav" aria-label="Account">
         {% block topnav_extra %}{% endblock %}
+        <a class="balance-pill" href="{% url 'credits' %}" title="Available demo credits">
+          <strong id="balance-available">{{ wallet.available|credits:2 }}</strong><span class="unit">credits</span>
+        </a>
         <form method="post" action="{% url 'logout' %}">
           {% csrf_token %}
           <button type="submit" class="link-button">Sign out</button>
