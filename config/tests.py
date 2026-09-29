@@ -50,3 +50,37 @@ class DatabaseConfigTests(SimpleTestCase):
         self.assertTrue(db["CONN_HEALTH_CHECKS"])
         self.assertEqual(db["CONN_MAX_AGE"], 0)
         self.assertEqual(db["OPTIONS"]["sslmode"], "require")
+
+
+class DeploymentSettingsTests(SimpleTestCase):
+    def test_vercel_hosts_come_from_system_variables(self):
+        from config.deploy import vercel_hosts
+
+        environ = {
+            "VERCEL_URL": "lightchat-abc123.vercel.app",
+            "VERCEL_BRANCH_URL": "",
+            "VERCEL_PROJECT_PRODUCTION_URL": "lightchat.vercel.app",
+        }
+        self.assertEqual(vercel_hosts(environ), ["lightchat-abc123.vercel.app", "lightchat.vercel.app"])
+        self.assertEqual(vercel_hosts({}), [])
+
+    def test_deploy_check_passes_on_vercel(self):
+        """`check --deploy` is clean with the settings a Vercel deployment gets."""
+        import os
+        import subprocess
+        import sys
+
+        from django.conf import settings
+
+        environ = {
+            **os.environ,
+            "DEBUG": "False",
+            "VERCEL": "1",
+            "VERCEL_URL": "lightchat-abc123.vercel.app",
+            "SECRET_KEY": "test-" + "k7Qz9xW2pL" * 6,
+        }
+        result = subprocess.run(
+            [sys.executable, "manage.py", "check", "--deploy", "--fail-level", "WARNING"],
+            cwd=settings.BASE_DIR, env=environ, capture_output=True, text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)

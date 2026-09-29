@@ -10,12 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 import environ
 from django.core.exceptions import ImproperlyConfigured
 
-from config.deploy import database_config
+from config.deploy import database_config, vercel_hosts
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,7 +38,22 @@ SECRET_KEY = env("SECRET_KEY", default="") or (
 if not SECRET_KEY:
     raise ImproperlyConfigured("Set SECRET_KEY (or DEBUG=True for local development).")
 
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"]) + vercel_hosts(os.environ)
+
+# HTTPS-only deployment (on by default on Vercel, which sets VERCEL=1).
+# Vercel terminates TLS and forwards the original scheme in X-Forwarded-Proto.
+HTTPS_ONLY = env.bool("HTTPS_ONLY", default=bool(os.environ.get("VERCEL")))
+if HTTPS_ONLY:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    # One year, this host only. Subdomains and preloading are left off
+    # (W005, W021): *.vercel.app is not ours to cover or submit.
+    SECURE_HSTS_SECONDS = 31_536_000
+    # mail.E001: the console mail backend is fine because the app never
+    # sends email (no password reset or notifications yet).
+    SILENCED_SYSTEM_CHECKS = ["security.W005", "security.W021", "mail.E001"]
 
 
 # Application definition
