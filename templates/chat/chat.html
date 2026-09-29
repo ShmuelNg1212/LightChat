@@ -70,7 +70,32 @@
       {% endif %}
     </div>
   </div>
-  {% block composer %}{% endblock %}
+  <div class="composer-wrap">
+    {% if offerings %}
+    <form class="composer" id="composer" data-send-url="{% url 'send' %}" data-credits-url="{% url 'credits' %}" autocomplete="off">
+      {% csrf_token %}
+      <input type="hidden" name="conversation" value="{{ current.pk|default:'' }}">
+      <div class="composer-box">
+        <label for="prompt" class="visually-hidden">Message</label>
+        <textarea id="prompt" name="prompt" rows="1" maxlength="16000" placeholder="Message Litechat" required></textarea>
+        <div class="composer-bar">
+          <label for="model" class="visually-hidden">Model</label>
+          <select id="model" name="model">
+            {% for o in offerings %}
+              <option value="{{ o.slug }}"{% if o.pk == selected_offering %} selected{% endif %}>{{ o.display_name }}</option>
+            {% endfor %}
+          </select>
+          <span class="spacer"></span>
+          <button type="button" class="button button-small" id="stop" hidden>Stop</button>
+          <button type="submit" class="button button-primary button-small" id="send">Send</button>
+        </div>
+      </div>
+    </form>
+    {% else %}
+    <p class="notice">No models are available right now. The service administrator needs to configure a model key.</p>
+    {% endif %}
+  </div>
+  <div class="visually-hidden" role="status" aria-live="polite" id="live"></div>
 </section>
 {% endblock %}
 

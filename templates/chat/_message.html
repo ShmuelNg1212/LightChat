@@ -1,7 +1,9 @@
 {% if m.role == "user" %}
-<div class="msg msg-user"><div class="bubble">{{ m.content }}</div></div>
+<div class="msg msg-user" data-message="{{ m.pk }}"><div class="bubble">{{ m.content }}</div></div>
 {% else %}
-<article class="msg msg-assistant">
+{% with gen=g|default:m.generation %}
+<article class="msg msg-assistant" data-message="{{ m.pk }}"{% if gen %} data-status="{{ gen.status }}"{% endif %}>
   <div class="content">{{ m.content|linebreaks }}</div>
 </article>
+{% endwith %}
 {% endif %}

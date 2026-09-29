@@ -18,4 +18,243 @@
       }
     });
   }
+
+  // ---- Composer ----
+  const form = document.getElementById("composer");
+  if (!form) return;
+
+  const textarea = form.querySelector("textarea[name=prompt]");
+  const modelSelect = form.querySelector("select[name=model]");
+  const conversationInput = form.querySelector("input[name=conversation]");
+  const sendButton = document.getElementById("send");
+  const scroller = document.getElementById("messages");
+  const list = document.getElementById("messages-inner");
+  const live = document.getElementById("live");
+  const csrf = form.querySelector("input[name=csrfmiddlewaretoken]").value;
+
+  let busy = false;
+  // One ID per message: a repeated submit of the same message reuses it, so the
+  // server can refuse the duplicate instead of charging twice.
+  let requestId = crypto.randomUUID();
+
+  const announce = (text) => { live.textContent = ""; setTimeout(() => { live.textContent = text; }, 50); };
+
+  const nearBottom = () => scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < 80;
+  const scrollToBottom = () => { scroller.scrollTop = scroller.scrollHeight; };
+
+  function autosize() {
+    textarea.style.height = "auto";
+    textarea.style.height = Math.min(textarea.scrollHeight, window.innerHeight * 0.4) + "px";
+  }
+  textarea.addEventListener("input", autosize);
+
+  textarea.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
+      e.preventDefault();
+      form.requestSubmit();
+    }
+  });
+
+  function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function fromHTML(html) {
+    const t = document.createElement("template");
+    t.innerHTML = html.trim();
+    return t.content.firstElementChild;
+  }
+
+  function setBusy(value) {
+    busy = value;
+    sendButton.disabled = value;
+    textarea.setAttribute("aria-busy", String(value));
+  }
+
+  function setBalance(text) {
+    const node = document.getElementById("balance-available");
+    if (node && text) node.textContent = text;
+  }
+
+  function adoptConversation(start) {
+    conversationInput.value = start.conversation;
+    if (!start.created) return;
+    history.replaceState(null, "", start.url);
+    document.title = start.title + " · Litechat";
+    const empty = document.getElementById("sidebar-empty");
+    if (empty) empty.remove();
+    const convoList = document.getElementById("convo-list");
+    const item = el("li");
+    const link = el("a", "", start.title);
+    link.href = start.url;
+    link.setAttribute("aria-current", "page");
+    item.appendChild(link);
+    convoList.prepend(item);
+  }
+
+  function pendingReply() {
+    const article = el("article", "msg msg-assistant");
+    article.dataset.status = "streaming";
+    const content = el("div", "content streaming");
+    const typing = el("div", "typing");
+    typing.setAttribute("aria-hidden", "true");
+    typing.append(el("span"), el("span"), el("span"));
+    content.appendChild(typing);
+    article.appendChild(content);
+    return { article, content, typing };
+  }
+
+  function showRejection(article, message, url) {
+    article.replaceChildren();
+    const box = el("div", "msg-error");
+    box.append(el("strong", "", "Not sent. "), document.createTextNode(message + " "));
+    if (url) {
+      const link = el("a", "", "Open the chat");
+      link.href = url;
+      box.appendChild(link);
+    }
+    if (/credit/i.test(message)) {
+      const link = el("a", "", "Add demo credits");
+      link.href = form.dataset.creditsUrl;
+      box.appendChild(link);
+    }
+    article.appendChild(box);
+    announce("Message not sent. " + message);
+  }
+
+  async function send({ prompt, retry }) {
+    if (busy) return;
+    setBusy(true);
+    const empty = document.getElementById("empty-state");
+    if (empty) empty.remove();
+
+    let userBubble = null;
+    if (!retry) {
+      userBubble = el("div", "msg msg-user");
+      userBubble.appendChild(el("div", "bubble", prompt));
+      list.appendChild(userBubble);
+    }
+    const reply = pendingReply();
+    list.appendChild(reply.article);
+    scrollToBottom();
+
+    const body = {
+      prompt: prompt || "",
+      model: modelSelect.value,
+      request_id: requestId,
+      conversation: conversationInput.value || null,
+      retry: retry || null,
+    };
+
+    let response;
+    try {
+      response = await fetch(form.dataset.sendUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
+        body: JSON.stringify(body),
+      });
+    } catch (err) {
+      // Nothing reached the server, or we can't tell. Keep the same request ID so
+      // sending again can't be charged twice.
+      showRejection(reply.article, "Couldn't reach Litechat. Check your connection and send again.");
+      if (userBubble) { userBubble.remove(); textarea.value = prompt; autosize(); }
+      setBusy(false);
+      return;
+    }
+
+    if (!response.ok) {
+      let data = {};
+      try { data = await response.json(); } catch (_) { /* not JSON */ }
+      const error = data.error || { message: "Something went wrong. Try again." };
+      showRejection(reply.article, error.message, error.url);
+      if (userBubble && error.code !== "duplicate") {
+        userBubble.remove();
+        textarea.value = prompt || "";
+        autosize();
+      }
+      if (error.code === "duplicate") requestId = crypto.randomUUID();
+      setBusy(false);
+      return;
+    }
+
+    // Accepted: this request ID is spent.
+    requestId = crypto.randomUUID();
+    if (!retry) { textarea.value = ""; autosize(); }
+
+    let received = "";
+    let ended = false;
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+
+    const handle = (event) => {
+      if (event.type === "start") {
+        adoptConversation(event);
+        if (userBubble && event.user_message) userBubble.dataset.message = event.user_message;
+        setBalance(event.available);
+      } else if (event.type === "delta") {
+        const follow = nearBottom();
+        if (reply.typing.isConnected) reply.typing.remove();
+        received += event.text;
+        reply.content.textContent = received;
+        if (follow) scrollToBottom();
+      } else if (event.type === "end") {
+        ended = true;
+        const follow = nearBottom();
+        const finished = fromHTML(event.html);
+        reply.article.replaceWith(finished);
+        setBalance(event.available);
+        if (follow) scrollToBottom();
+        announce(event.status === "completed" ? "Reply finished." : "Reply did not finish.");
+      }
+    };
+
+    try {
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let newline;
+        while ((newline = buffer.indexOf("\n")) >= 0) {
+          const line = buffer.slice(0, newline).trim();
+          buffer = buffer.slice(newline + 1);
+          if (line) handle(JSON.parse(line));
+        }
+      }
+    } catch (err) {
+      /* connection dropped; handled below */
+    }
+
+    if (!ended) {
+      // The stream broke before the server finished. Never present it as complete.
+      reply.article.dataset.status = "needs_reconciliation";
+      reply.content.classList.remove("streaming");
+      const warn = el("div", "msg-warn", "The connection dropped before this reply finished. Reload the page to see its final state.");
+      reply.article.appendChild(warn);
+      announce("Connection lost before the reply finished.");
+    }
+    setBusy(false);
+    textarea.focus();
+  }
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const prompt = textarea.value.trim();
+    if (!prompt || busy) return;
+    send({ prompt });
+  });
+
+  // Retry buttons are rendered by the server on failed replies.
+  list.addEventListener("click", (e) => {
+    const button = e.target.closest("[data-retry]");
+    if (!button || busy) return;
+    button.closest(".msg").remove();
+    send({ retry: button.dataset.retry });
+  });
+
+  autosize();
+  scrollToBottom();
 })();
