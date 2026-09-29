@@ -1,0 +1,15 @@
+# Direct dependencies, pinned. Transitive ones are resolved by pip (`pip check` must stay clean).
+
+# Framework
+Django==6.1.1
+
+# Configuration & database
+django-environ==0.14.0             # SECRET_KEY, DEBUG, ALLOWED_HOSTS, keys ... from the environment / .env
+dj-database-url==3.1.2             # DATABASE_URL → DATABASES (SQLite fallback locally)
+
+# Upstream LLM proxy
+httpx==0.28.1                      # direct HTTP to BUILD LLM Proxy; SDKs avoided because they auto-retry
+
+# Rendering model replies
+markdown-it-py==4.2.0              # Markdown → HTML (raw HTML disabled)
+nh3==0.3.7                         # HTML sanitizer for rendered replies
