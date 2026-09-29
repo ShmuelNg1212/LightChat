@@ -2,7 +2,9 @@
 
 - **Date:** 2026-09-29 13:48
 - **Study:** [../study/2026-09-29-1347-reply-limit-and-starting-credit.md](../study/2026-09-29-1347-reply-limit-and-starting-credit.md) (see its Review)
-- **Status:** awaiting-approval
+- **Status:** in-progress
+
+> **Approved 2026-09-29.** The Gardener replied "approved".
 
 ## Decisions (from the study review)
 
