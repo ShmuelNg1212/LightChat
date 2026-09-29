@@ -43,7 +43,7 @@ submission/
 | What | Replacement | Where |
 |---|---|---|
 | Your email address | `[REDACTED_EMAIL]` | Transcripts, git log |
-| Local test passwords (`[REDACTED_TEST_PASSWORD]`, `[REDACTED_TEST_PASSWORD]`, `[REDACTED_TEST_PASSWORD]`, `[REDACTED_TEST_PASSWORD]`) | `[REDACTED_TEST_PASSWORD]` | Transcripts, verification scripts |
+| Local test passwords (5 throwaway practice-account passwords; the list lives in gitignored `submission/inputs/redact-test-passwords.txt`) | `[REDACTED_TEST_PASSWORD]` | Transcripts, verification scripts |
 | `.env` values | Never copied. A scan fails the build if any value appears anywhere. | Everywhere |
 | `/Users/shm` home paths | **Decision below** | Transcripts |
 

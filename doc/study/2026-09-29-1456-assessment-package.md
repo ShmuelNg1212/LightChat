@@ -46,7 +46,7 @@ Claude Code keeps session transcripts as JSONL under `~/.claude/projects/-Users-
 **Privacy scan of the transcripts** (patterns counted, values never printed):
 - **Proxy keys:** the exact `.env` values appear **0 times**. No key-shaped `sk-…` strings.
 - **Email:** your email address appears 4 times in the main session and 4 in the subagent logs (session context). → **redact**.
-- **Test passwords:** throwaway passwords for local practice accounts (`[REDACTED_TEST_PASSWORD]`, `[REDACTED_TEST_PASSWORD]`, `[REDACTED_TEST_PASSWORD]`, `[REDACTED_TEST_PASSWORD]`) appear in scripts. → **redact** in copies.
+- **Test passwords:** five throwaway passwords for local practice accounts appear in scripts and commands. → **redact** in copies. The list is kept in a gitignored input file, never in the repository.
 - **Home paths:** `/Users/shm/...` appears about 4,200 times. It reveals the macOS username, which also matches the git author name. → decision below.
 
 ### Skills and tooling (from the transcript's tool calls, not memory)

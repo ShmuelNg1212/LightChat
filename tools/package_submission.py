@@ -31,7 +31,9 @@ INPUTS = SUBMISSION / "inputs"
 TRANSCRIPTS = Path.home() / ".claude/projects/-Users-shm-litechat-midterm"
 MAIN_SESSION = "41aceb7c-abfa-464c-b227-5a085f4011ca"
 PLUGIN = Path.home() / ".claude/plugins/cache/impeccable/impeccable/4.4.0"
-TEST_PASSWORDS = ["[REDACTED_TEST_PASSWORD]", "[REDACTED_TEST_PASSWORD]", "[REDACTED_TEST_PASSWORD]", "[REDACTED_TEST_PASSWORD]", "[REDACTED_TEST_PASSWORD]"]
+# Throwaway local test-account passwords to redact, one per line, kept out of git.
+TEST_PASSWORDS_FILE = INPUTS / "redact-test-passwords.txt"
+TEST_PASSWORDS: list[str] = []
 EMAIL_TOKEN, PASSWORD_TOKEN = "[REDACTED_EMAIL]", "[REDACTED_TEST_PASSWORD]"
 
 # Scratchpad verification scripts whose creation is recorded in the session transcript.
@@ -326,9 +328,10 @@ def main():
     ap.add_argument("--scratch", type=Path)
     ap.add_argument("--impeccable-license", type=Path, required=True)
     args = ap.parse_args()
-    for needed in (INPUTS / "README.md", INPUTS / "SKILLS-USED.md", args.impeccable_license):
+    for needed in (INPUTS / "README.md", INPUTS / "SKILLS-USED.md", TEST_PASSWORDS_FILE, args.impeccable_license):
         if not needed.exists():
             sys.exit(f"Missing input: {needed}")
+    TEST_PASSWORDS.extend(p.strip() for p in TEST_PASSWORDS_FILE.read_text().splitlines() if p.strip())
 
     now = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     head = run("git", "rev-parse", "HEAD").strip()
