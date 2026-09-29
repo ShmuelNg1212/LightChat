@@ -31,3 +31,6 @@ htmlcov/
 .impeccable/config.local.json
 .impeccable/live/inject-journal.json
 .impeccable/review/
+
+# Assessment submission package (local only; never committed)
+/submission/
