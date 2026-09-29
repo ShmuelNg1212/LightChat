@@ -27,8 +27,10 @@ class Command(BaseCommand):
         parser.add_argument("--provider", choices=sorted(MODELS), action="append")
         parser.add_argument("--bad-key", action="store_true", help="Also send one request with an invalid key.")
         parser.add_argument("--max-tokens", type=int, default=32)
+        parser.add_argument("--no-save", action="store_true", help="Report only; leave the committed fixtures untouched.")
 
     def handle(self, *args, **opts):
+        self.save = not opts["no_save"]
         OUT.mkdir(parents=True, exist_ok=True)
         for provider in opts["provider"] or sorted(MODELS):
             key = settings.PROXY_KEYS.get(provider)
@@ -57,11 +59,16 @@ class Command(BaseCommand):
         for secret in filter(None, settings.PROXY_KEYS.values()):
             text = text.replace(secret, "[REDACTED]")
         header_lines = "".join(f"# {k}: {v}\n" for k, v in sorted(headers.items()))
-        (OUT / filename).write_text(
-            f"# POST {req.path}\n# status: {status}\n{header_lines}# ---\n{text}\n", encoding="utf-8"
-        )
+        if self.save:
+            (OUT / filename).write_text(
+                f"# POST {req.path}\n# status: {status}\n{header_lines}# ---\n{text}\n", encoding="utf-8"
+            )
+        else:
+            filename = "(not saved)"
 
-        outcome = f"HTTP {status}"
+        outcome = f"HTTP {status} with max_tokens={max_tokens}"
+        if status != 200:
+            outcome += f", body: {text[:300]}"
         if status == 200:
             try:
                 events = list(adapter.parse(iter_sse(lines)))
