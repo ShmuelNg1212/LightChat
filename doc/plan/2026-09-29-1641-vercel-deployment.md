@@ -84,3 +84,8 @@ The Gardener asked for the Study and Plan together, so both are approved in one 
   - It was public at `lightchat-five.vercel.app` for about 3 minutes, because Standard Protection leaves production domains open.
   - It was removed with `vercel rm`, and the URL now returns 404. Whether anyone signed up in that window can't be read from the CLI, because Neon's variables are sensitive.
   - The project still has no production target, so any next deploy would again be production. Paused for the Gardener's decision.
+- **Gardener decision (2026-09-29):** "protect my deployments temporarily while testing. go ahead and go-live once tests are complete and dont return failures."
+  - Deployment Protection is set to **All Deployments** (Vercel Authentication, free on Hobby). Every URL, production included, needs a Vercel login.
+  - A private bootstrap production deployment lets later `vercel deploy` runs create real previews.
+  - **Rendezvous 1 is waived:** if every preview test passes, go live without pausing. That means deploying production and restoring **Standard Protection**, which makes the production domain public. Any failure stops the go-live and is reported.
+- The CLI's permission classifier blocked the bootstrap `vercel deploy --prod`. The Gardener has to run it or allow it.
