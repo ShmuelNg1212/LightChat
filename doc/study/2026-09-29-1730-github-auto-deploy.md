@@ -1,7 +1,7 @@
 # Study: Automatic deploys from GitHub
 - **Date:** 2026-09-29 17:30
 - **Request:** "yes automate deploys from github, but this means i still can rollback in case of bugs or urgent security breaches right?"
-- **Status:** awaiting-approval
+- **Status:** approved
 
 ## Intended Outcome
 - A push to `main` on GitHub deploys to production (https://lightchat-five.vercel.app) with no manual command.
@@ -55,3 +55,6 @@ This follows Vercel's default Git workflow. The only addition is the test gate i
 - **Migrations run automatically on production** before the new version goes live. A migration that removes or renames something could break the version still serving (and the rollback target). Rule: make database changes additive, and remove old fields one release later. This will be in the wiki.
 - **Neon Free allows 10 branches per project.** Each preview branch uses one until the preview expires, so old ones may need deleting in the Neon console.
 - **Cost:** $0. Tests make no paid calls. Verification makes about 2 short paid replies (one preview, one production).
+
+## Review
+- **2026-09-29:** Approved by the Gardener (option A: Git deploys with the test suite as a build gate).
