@@ -62,7 +62,7 @@
   </div>
   <div class="composer-wrap">
     {% if offerings %}
-    <form class="composer" id="composer" data-send-url="{% url 'send' %}" data-credits-url="{% url 'credits' %}" autocomplete="off">
+    <form class="composer" id="composer" data-send-url="{% url 'send' %}" data-credits-url="{% url 'credits' %}" data-available-micro="{{ wallet.available }}" autocomplete="off">
       {% csrf_token %}
       <input type="hidden" name="conversation" value="{{ current.pk|default:'' }}">
       <div class="composer-box">
@@ -71,9 +71,10 @@
         <div class="composer-bar">
           <div class="tariff">
             <label for="model" class="tariff-label">Model</label>
-            <select id="model" name="model" aria-describedby="model-price">
+            <svg class="icon tariff-chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+            <select id="model" name="model" aria-describedby="model-price tariff-warning">
               {% for o in offerings %}
-                <option value="{{ o.slug }}" data-price="{{ o.input_rate|credits:2 }} in · {{ o.output_rate|credits:2 }} out, credits per million tokens" data-example="{{ o.example_cost|credits }}"{% if o.pk == selected_offering %} selected{% endif %}>{{ o.display_name }}</option>
+                <option value="{{ o.slug }}" data-price="{{ o.input_rate|credits:2 }} in · {{ o.output_rate|credits:2 }} out, credits per million tokens" data-example="{{ o.example_cost|credits }}" data-hold="{{ o.min_hold|credits }}" data-hold-micro="{{ o.min_hold }}"{% if o.pk == selected_offering %} selected{% endif %}>{{ o.display_name }}</option>
               {% endfor %}
             </select>
           </div>
@@ -81,7 +82,8 @@
           <button type="submit" class="button button-primary button-small" id="send"><svg class="icon" aria-hidden="true"><use href="#i-send"/></svg>Send</button>
         </div>
       </div>
-      <p class="tariff-rate" id="model-price"><span id="model-rate"></span> <span class="tariff-example">A 1,000-token question with a 500-token answer costs <strong id="model-example"></strong> credits.</span></p>
+      <p class="tariff-rate" id="model-price"><span id="model-rate"></span> <span class="tariff-example">A 1,000-token question with a 500-token answer costs <strong id="model-example"></strong> credits.</span> <span class="tariff-hold">Each reply first holds at least <strong id="model-hold"></strong> credits (more in long chats); unused credit comes back.</span></p>
+      <p class="tariff-warning" id="tariff-warning" hidden><strong>Not enough credit for this model.</strong> A reply holds at least <span id="warning-hold"></span> credits and you have <span id="warning-available"></span>. <a href="{% url 'credits' %}">Add demo credits</a></p>
       <p class="composer-note">Every model here is answered by DeepSeek Flash through a different provider's interface, so replies won't match the named provider. Prices are in demo credits, not real money.</p>
     </form>
     {% else %}

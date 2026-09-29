@@ -48,13 +48,29 @@
 
   const rate = document.getElementById("model-rate");
   const example = document.getElementById("model-example");
+  const hold = document.getElementById("model-hold");
+  const warning = document.getElementById("tariff-warning");
+
+  // Refuse up front, with the reason, when the balance can't cover this model's smallest hold.
+  function checkCredit() {
+    const option = modelSelect.selectedOptions[0];
+    const short = availableMicro < parseInt(option.dataset.holdMicro, 10);
+    warning.hidden = !short;
+    if (short) {
+      document.getElementById("warning-hold").textContent = option.dataset.hold;
+      document.getElementById("warning-available").textContent = (availableMicro / 1e6).toFixed(4);
+    }
+    sendButton.disabled = busy || short;
+  }
+
   const showPrice = () => {
     const option = modelSelect.selectedOptions[0];
     rate.textContent = "Price: " + option.dataset.price + ".";
     example.textContent = option.dataset.example;
+    hold.textContent = option.dataset.hold;
+    checkCredit();
   };
   modelSelect.addEventListener("change", showPrice);
-  showPrice();
 
   function autosize() {
     textarea.style.height = "auto";
@@ -84,7 +100,8 @@
 
   function setBusy(value) {
     busy = value;
-    sendButton.disabled = value;
+    if (!value) checkCredit();
+    else sendButton.disabled = true;
     if (!value) {
       stopButton.hidden = true;
       stopButton.disabled = false;
@@ -114,26 +131,39 @@
     requestAnimationFrame(step);
   }
 
+  let availableMicro = parseInt(form.dataset.availableMicro, 10) || 0;
+  let settleTimer = null;
+
   function setBalance(event, { settle = false } = {}) {
     const available = document.getElementById("balance-available");
     const held = document.getElementById("balance-held");
     const heldValue = document.getElementById("balance-held-value");
-    if (available && event.available) {
-      if (settle) countTo(available, event.available);
-      else available.textContent = event.available;
+    const heldLabel = document.getElementById("balance-held-label");
+    if (event.available) {
+      availableMicro = Math.round(parseFloat(event.available.replace(/,/g, "")) * 1e6);
+      if (available) {
+        if (settle) countTo(available, event.available);
+        else available.textContent = event.available;
+      }
+      checkCredit();
     }
     if (!held || !heldValue) return;
-    if (event.held) {
-      held.classList.remove("is-settling");
+    clearTimeout(settleTimer);
+    const showHeld = () => {
+      held.classList.remove("is-charged");
+      heldLabel.textContent = "held";
+      if (event.held) { heldValue.textContent = event.held; held.hidden = false; }
+      else held.hidden = true;
+    };
+    if (settle && event.charged) {
+      // The settle: the hold becomes a printed charge on the readout for a moment.
       held.hidden = false;
-      heldValue.textContent = event.held;
-    } else if (!held.hidden) {
-      if (settle && !reducedMotion.matches) {
-        held.classList.add("is-settling");
-        held.addEventListener("animationend", () => { held.hidden = true; held.classList.remove("is-settling"); }, { once: true });
-      } else {
-        held.hidden = true;
-      }
+      held.classList.add("is-charged");
+      heldValue.textContent = event.charged;
+      heldLabel.textContent = "charged";
+      settleTimer = setTimeout(showHeld, 3500);
+    } else {
+      showHeld();
     }
   }
 
@@ -334,7 +364,7 @@
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const prompt = textarea.value.trim();
-    if (!prompt || busy) return;
+    if (!prompt || busy || sendButton.disabled) return;
     send({ prompt });
   });
 
@@ -346,6 +376,7 @@
     send({ retry: button.dataset.retry });
   });
 
+  showPrice();
   autosize();
   scrollToBottom();
 })();

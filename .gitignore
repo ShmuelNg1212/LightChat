@@ -30,3 +30,4 @@ htmlcov/
 .impeccable/hook.cache.json
 .impeccable/config.local.json
 .impeccable/live/inject-journal.json
+.impeccable/review/

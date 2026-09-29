@@ -23,7 +23,7 @@
       <a class="readout" href="{% url 'credits' %}">
         <span class="readout-label">Available</span>
         <span class="readout-value"><span id="balance-available">{{ wallet.available|credits }}</span> <span class="readout-unit">credits</span></span>
-        <span class="readout-held" id="balance-held"{% if not wallet.held %} hidden{% endif %}><span class="pulse-light" aria-hidden="true"></span><span id="balance-held-value">{{ wallet.held|credits }}</span> held</span>
+        <span class="readout-held" id="balance-held"{% if not wallet.held %} hidden{% endif %}><span class="pulse-light" aria-hidden="true"></span><span id="balance-held-value">{{ wallet.held|credits }}</span> <span id="balance-held-label">held</span></span>
       </a>
       <nav class="account" aria-label="Account">
         {% block topnav_extra %}{% endblock %}

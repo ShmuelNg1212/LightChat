@@ -265,3 +265,31 @@ class HardeningTests(TestCase):
         html = self.client.get(reverse("home")).content.decode()
         self.assertIn('<a class="skip-link" href="#messages">Skip to conversation</a>', html)
         self.assertIn('id="messages" role="region" aria-label="Messages" tabindex="0"', html)
+
+
+@keys
+class FinishReviewFixTests(TestCase):
+    def test_end_event_carries_the_charge_for_the_settle(self):
+        self.client.force_login(make_user())
+        payload = {"prompt": "Hi", "model": "gpt-5-6-luna", "request_id": rid()}
+        with FakeProxy(openai_reply("Hi", prompt_tokens=100, completion_tokens=50)):
+            events = read_events(self.client.post(reverse("send"), json.dumps(payload), content_type="application/json"))
+        self.assertEqual(events[-1]["charged"], "0.0015")
+        with FakeProxy('{"error": {}}', status=429):
+            payload["request_id"] = rid()
+            failed = read_events(self.client.post(reverse("send"), json.dumps(payload), content_type="application/json"))
+        self.assertEqual(failed[-1]["charged"], "")
+
+    def test_tariff_states_minimum_hold_and_page_knows_the_balance(self):
+        self.client.force_login(make_user(credit=40_000))
+        html = self.client.get(reverse("home")).content.decode()
+        self.assertRegex(html, r'data-hold="0\.5\d{3}" data-hold-micro="5\d{5}"')
+        self.assertIn('data-available-micro="40000"', html)
+        self.assertIn('id="tariff-warning" hidden', html)
+        self.assertIn("Each reply first holds at least", html)
+
+    def test_sign_up_help_is_in_our_words(self):
+        html = self.client.get(reverse("signup")).content.decode()
+        self.assertIn("Letters, numbers and @ . + - _ only", html)
+        self.assertIn("At least 8 characters.", html)
+        self.assertNotIn("Your password can’t be too similar", html)

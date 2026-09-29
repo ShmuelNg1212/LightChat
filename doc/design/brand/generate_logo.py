@@ -63,11 +63,13 @@ for name, (ink, light) in COLORWAYS.items():
         f.write(f'<svg {HEAD} viewBox="0 0 {lock_w} 24" width="{lock_w}" height="24"><title>LightChat</title>'
                 f'{symbol("regular", ink, light)}<path d="{word_d}" fill="{ink}"/></svg>\n')
 
-# Favicon: small optical size, follows the browser/OS theme.
+# Favicon: small optical size on a faceplate plate, so it reads on light and dark tab strips alike.
+small = SIZES["small"]
+cx, cy, r = small["dot"]
 with open(f"{OUT}/favicon.svg", "w") as f:
-    f.write('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><style>'
-            '.i{stroke:#1B1F1D}.l{fill:#C27400}@media (prefers-color-scheme:dark){.i{stroke:#E7EAE6}.l{fill:#F0A93A}}'
-            f'</style><path class="i" d="{SIZES["small"]["d"]}" fill="none" stroke-width="{SIZES["small"]["w"]}" '
-            'stroke-linecap="round" stroke-linejoin="round"/>'
-            f'<circle class="l" cx="{SIZES["small"]["dot"][0]}" cy="{SIZES["small"]["dot"][1]}" r="{SIZES["small"]["dot"][2]}"/></svg>\n')
+    f.write('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">'
+            '<rect width="24" height="24" rx="5.5" fill="#F1F2EF"/>'
+            '<g transform="translate(2.4 2.4) scale(0.8)">'
+            f'<path d="{small["d"]}" fill="none" stroke="#1B1F1D" stroke-width="{small["w"]}" stroke-linecap="round" stroke-linejoin="round"/>'
+            f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="#C27400"/></g></svg>\n')
 print("lockup viewBox width", lock_w)

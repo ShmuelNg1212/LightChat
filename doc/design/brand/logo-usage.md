@@ -9,7 +9,7 @@ The mark is the **Pulse bubble**: an open speech bubble whose tail is a single d
 | `lightchat-lockup-{signal,signal-dark,black,white}.svg` | Symbol plus the "LightChat" wordmark (outlined; no font needed). Viewbox 105.6 × 24. |
 | `lightchat-symbol-{…}.svg` | Symbol, **regular** optical size, for 32 px and up |
 | `lightchat-symbol-small-{…}.svg` | Symbol, **small** optical size (heavier stroke, larger light), for 16–32 px |
-| `favicon.svg` | Small symbol; switches ink and light for the browser's dark theme |
+| `favicon.svg` | Small symbol on a faceplate-grey plate (`#F1F2EF`), so it reads on light and dark tab strips alike (an OS-theme media query was dropped: tab colour follows the browser theme, not the OS) |
 | `favicon-32.png`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, `icon-maskable-512.png` | Raster exports, see *Provenance* |
 
 Colorways:
@@ -17,7 +17,7 @@ Colorways:
 - `signal-dark`: `#E7EAE6` with `#F0A93A`, on dark grounds.
 - `black` / `white`: single-color.
 
-All files have transparent backgrounds except the app icons, which need a solid plate.
+All files have transparent backgrounds except the favicon and app icons, which sit on a solid plate.
 
 ## Rules
 

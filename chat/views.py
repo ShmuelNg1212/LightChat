@@ -23,6 +23,9 @@ def owned(request, pk) -> Conversation:
 
 def sidebar_context(request, current=None):
     offerings = list(ModelOffering.available())
+    for offering in offerings:
+        # The smallest hold a reply can take with this model (a one-line prompt in a new chat).
+        offering.min_hold = services.reservation_for(offering, [services.ProxyMessage("user", "")])
     selected = None
     if current is not None:
         last = current.generations.exclude(offering=None).order_by("-created_at").first()
@@ -156,6 +159,7 @@ def send(request):
                             request=request,
                         ),
                         **_balance(request.user),
+                        "charged": format_credits(value.charged) if value.status == Generation.Status.COMPLETED else "",
                     }
                 )
 
