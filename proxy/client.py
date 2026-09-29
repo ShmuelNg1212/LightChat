@@ -1,8 +1,10 @@
 """Stream one reply from BUILD LLM Proxy.
 
-Never retries: the proxy docs forbid retrying after partial output, and a
-repeated request could be billed twice. Errors are classified by whether the
-request could have produced billable output.
+Never retries a request that was sent: the proxy docs forbid retrying after
+partial output, and a repeated request could be billed twice. Only failed
+*connection attempts* are retried (httpx transport retries), because nothing
+was sent. Errors are classified by whether the request could have produced
+billable output.
 """
 
 import logging
@@ -18,7 +20,8 @@ from .types import Cancelled, Done, Message, ProxyError, TextDelta
 
 log = logging.getLogger("litechat.proxy")
 
-TIMEOUT = httpx.Timeout(connect=10.0, read=90.0, write=10.0, pool=10.0)
+TIMEOUT = httpx.Timeout(connect=5.0, read=90.0, write=10.0, pool=10.0)
+CONNECT_RETRIES = 3  # connection attempts only; see module docstring
 MAX_DURATION = 300.0  # seconds for a whole reply
 
 # Status codes returned before generation starts, so nothing was billed.
@@ -40,6 +43,11 @@ def set_transport(transport: httpx.BaseTransport | None) -> None:
     _transport = transport
 
 
+def make_http_client() -> httpx.Client:
+    transport = _transport or httpx.HTTPTransport(retries=CONNECT_RETRIES)
+    return httpx.Client(base_url=settings.PROXY_BASE_URL, timeout=TIMEOUT, transport=transport)
+
+
 def stream_reply(
     *,
     provider: str,
@@ -56,7 +64,7 @@ def stream_reply(
     req = adapter.build(model=model, messages=messages, max_output_tokens=max_output_tokens, key=key, system=system)
     started = time.monotonic()
 
-    with httpx.Client(base_url=settings.PROXY_BASE_URL, timeout=TIMEOUT, transport=_transport) as http:
+    with make_http_client() as http:
         try:
             with http.stream("POST", req.path, headers=req.headers, json=req.body) as response:
                 if response.status_code != 200:
